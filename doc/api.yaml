@@ -1,0 +1,295 @@
+openapi: '3.0.2'
+info:
+  title: API Title
+  version: '1.0'
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /session:
+    post:
+      tags: ["login"]
+      summary: Logs in the user
+      description: |-
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: doLogin
+      requestBody:
+        description: User details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Maria
+                  pattern: 'ˆ.*?$'
+                  minLength: 3
+                  maxLength: 16
+        required: true
+      responses:
+        '201':
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    type: string
+                    example: "abcdef012345"
+  /Photos:
+    parameters: 
+        - name: user/identifier   
+          in: header   
+          required: true
+          schema:
+            type: string
+            format: user/identifier
+    post:
+      description: post a new photo
+      summary: | 
+        post a new photo where peope will be able to see that photo,
+        like and comment on that photo.
+      operationId: uploadPhoto
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary   
+        required: true 
+      responses:
+        '200':
+          description: photo posted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      photoId:
+                        type: integer
+                      url:
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+  /Photos/{photoId}:  
+    parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: user/identifier
+          in: header
+          required: true
+          schema:
+            type: string
+            format: user/identifier
+
+
+    delete:
+      description: delete a photo
+      summary: | 
+        delete a photo from the website. deleting a photo deletes also 
+        all it's likes and comments.
+      operationId: deletePhoto
+
+      responses:
+        '200': 
+          description: 'file deleted successfully'
+        '204':
+          description: 'file already deleted previously'
+        '403':
+          description: 'unauthorised, only the user that posted the photo can delete it'
+        '404':
+          description: 'photo unexisting, make sure photoId is correct'
+
+  /user:
+    parameters:
+      - name: user/identifier
+        in: header
+        required: true
+        schema:
+          type: string
+          format: user/identifier
+    get:
+      summary: get list of all users this user follows and users that follow him
+      operationId: follower/following
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+    put:
+      description: follow a user
+      summary: |
+        You will follow this user and there posts will show up on your stream.
+      operationId: followUser
+      requestBody:
+        description: user you want to follow
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              format: user/identifier
+      responses:
+        '200': 
+          description: 'user successfully followed'
+        '404':
+          description: 'user not found make sure user exists'
+    
+    put:
+      description: unfollow a user
+      summary: |
+        You can unfollow any user that you have already followed
+      operationId: unfollowUser
+      requestBody:
+        description: user you want to unfollow
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              format: user/identifier
+
+      responses:
+        '200': 
+          description: user unfollowed successfully
+        '204':
+          description: you do not follow this user
+        '404':
+          description: user not found, make sure user exists
+
+    put:
+      description: ban a user
+      summary: |
+        If you ban a user you will no longer be able to see his photos.
+        He will also no longer be able to see your photos.
+      operationId: banUser
+      requestBody:
+        description: user you want to ban
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              format: user/identifier
+      responses:
+        '200': 
+          description: user baned successfully
+        '404':
+          description: user not found, make sure user exists
+
+    put:
+      description: unfollow a user
+      summary: |
+        You can unban any user that you have already baed
+      operationId: unban
+      requestBody:
+        description: user you want to unban
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              format: user/identifier
+
+      responses:
+        '200': 
+          description: user unbaned successfully
+        '204':
+          description: you have not baned this user
+        '404':
+          description: user not found, make sure user exists   
+
+    get:
+      description: get user profile
+      summary: |
+        See all the pictures a user has posted.
+        Also the number of photos posted and followers and users they are following
+      operationId: getUserProfile
+      requestBody:
+        description: user who's profile you want to see
+        required: true
+      content:
+        application/json:
+          schema:
+            type: string
+            format: user/identifier
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              type: array
+              items:
+                type: array
+                properties:
+                  photos:
+                    type: array
+                    items:
+                        type: string
+                        format: binary
+                  numberPhotos:
+                    type: integer
+                  followers/following:
+                    type: array
+                    items:
+                      type: string
+                      format: user/identifier 
+        '401':
+          description: you have been baned by or have baned this user, you therefore cannot view there profile 
+        '404':
+          description: user not found, make sure user exists   
+              
+    get:
+      description: get your profile
+      summary: |
+        See all the pictures a you have posted. 
+        Also the number of photos posted and followers and users you are following
+      operationId: getMyStream
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              type: array
+              items:
+                type: array
+                properties:
+                  photos:
+                    type: array
+                    items:
+                        type: string
+                        format: binary
+                  numberPhotos:
+                    type: integer
+                  followers/following:
+                    type: array
+                    items:
+                      type: string
+                      format: user/identifier 
+
+
+      
+
