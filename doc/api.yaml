@@ -2,14 +2,13 @@ openapi: '3.0.2'
 info:
   title: API Title
   version: '1.0'
-servers:
-  - url: https://api.server.test/v1
+
 paths:
   /session:
     post:
       tags: ["login"]
       summary: Logs in the user
-      description: |-
+      description: |
         If the user does not exist, it will be created,
         and an identifier is returned.
         If the user exists, the user identifier is returned.
@@ -19,14 +18,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: Maria
-                  pattern: 'ˆ.*?$'
-                  minLength: 3
-                  maxLength: 16
+              $ref: '#/components/schemas/username'
         required: true
       responses:
         '201':
@@ -38,15 +30,181 @@ paths:
                 properties:
                   identifier:
                     type: string
-                    example: "abcdef012345"
-  /Photos:
+  /user:
+    parameters:
+      - $ref: '#/components/parameters/users'
+    get:
+      description: get user profile
+      summary: |
+        See all the pictures a user has posted.
+        Also the number of photos posted and followers and users they are following
+      operationId: getUserProfile
+      requestBody:
+        description: user who's profile you want to see
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/username'
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  properties:
+                    photos:
+                      type: array
+                      items:
+                          $ref: '#/components/schemas/posts'
+                    numberPhotos:
+                      type: integer
+                    followers/following:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/username'
+        '401':
+          description: you have been baned by or have baned this user, you therefore cannot view there profile 
+        '404':
+          description: user not found, make sure user exists   
+  
+  /user/{id}:
+    parameters:
+      - $ref: '#/components/parameters/users'
+    put: 
+      description: change your username
+      summary: |
+        You can change your userame. It has to have a minimum of 3 letters and a maximum of 16
+        you can change it as many times as you want.
+      operationId: setMyUserName
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/username'
+      responses:
+        '200':
+          description: username changed successfully
+        '403':
+          description: unauthorised, only the owner of this account can change the username 
+              
+    get:
+      description: get your profile
+      summary: |
+        See all the pictures a you have posted. 
+        Also the number of photos posted and followers and users you are following
+      operationId: getMyStream
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  properties:
+                    photos:
+                      type: array
+                      items:
+                          $ref: '#/components/schemas/posts'
+                    numberPhotos:
+                      type: integer
+                    followers/following:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/username'
+  
+  /user/folow:
+    parameters:
+      - $ref: '#/components/parameters/users'
+    post:
+      description: follow a user
+      summary: |
+        You will follow this user and there posts will show up on your stream.
+      operationId: followUser
+      requestBody:
+        description: user you want to follow
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/username'
+      responses:
+        '200': 
+          description: 'user successfully followed'
+        '404':
+          description: 'user not found make sure user exists'
+    
+    delete:
+      description: unfollow a user
+      summary: |
+        You can unfollow any user that you have already followed
+      operationId: unfollowUser
+      requestBody:
+        description: user you want to unfollow
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/username'
+
+      responses:
+        '200': 
+          description: user unfollowed successfully
+        '204':
+          description: you do not follow this user
+        '404':
+          description: user not found, make sure user exists
+
+  /user/ban:
+    parameters:
+      - $ref: '#/components/parameters/users'
+    post:
+      description: ban a user
+      summary: |
+        If you ban a user you will no longer be able to see his photos.
+        He will also no longer be able to see your photos.
+      operationId: banUser
+      requestBody:
+        description: user you want to ban
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/username'
+      responses:
+        '200': 
+          description: user baned successfully
+        '404':
+          description: user not found, make sure user exists
+
+    delete:
+      description: unban a user
+      summary: |
+        You can unban any user that you have already baed
+      operationId: unbanUser
+      requestBody:
+        description: user you want to unban
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/username'
+
+      responses:
+        '200': 
+          description: user unbaned successfully
+        '204':
+          description: you have not baned this user
+        '404':
+          description: user not found, make sure user exists   
+  /posts:
     parameters: 
-        - name: user/identifier   
-          in: header   
-          required: true
-          schema:
-            type: string
-            format: user/identifier
+        - $ref: '#/components/parameters/users' 
     post:
       description: post a new photo
       summary: | 
@@ -57,11 +215,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary   
+              $ref: '#/components/schemas/posts'
         required: true 
       responses:
         '200':
@@ -87,21 +241,10 @@ paths:
                       createdAt:
                         type: string
                         format: date-time
-  /Photos/{photoId}:  
+  /posts/{photoId}:  
     parameters:
-        - name: photoId
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: user/identifier
-          in: header
-          required: true
-          schema:
-            type: string
-            format: user/identifier
-
-
+        - $ref: '#/components/parameters/posts'
+        - $ref: '#/components/parameters/users'
     delete:
       description: delete a photo
       summary: | 
@@ -111,184 +254,190 @@ paths:
 
       responses:
         '200': 
-          description: 'file deleted successfully'
+          description: 'photo deleted successfully'
         '204':
-          description: 'file already deleted previously'
+          description: 'photo already deleted previously'
         '403':
           description: 'unauthorised, only the user that posted the photo can delete it'
         '404':
           description: 'photo unexisting, make sure photoId is correct'
-
-  /user:
+  
+  /posts/like:
     parameters:
-      - name: user/identifier
-        in: header
-        required: true
-        schema:
-          type: string
-          format: user/identifier
-    get:
-      summary: get list of all users this user follows and users that follow him
-      operationId: follower/following
+      - $ref: '#/components/parameters/users'
+      - $ref: '#/components/parameters/posts'
+
+    post:
+      description: like a photo
+      summary: |
+        if you enjoyed a photo you can put a like on it
+        to show everyone that you enjoed that post.
+        likes can always be removed.
+      operationId:  likePhoto
       responses:
         '200':
-          description: succesfull response
+          description: photo liked successfully
+        '404':
+          description: post not found, please make sure it exists.
+
+    delete:
+      description: remove a like from a photo
+      summary: |
+        if you changed your mind about a post
+        or liked by accident you can remove any like you put.
+      operationId: unlikePhoto
+      responses:
+        '200':
+          description: like removed successfully
+        '204':
+          description: you have never liked this post
+        '404':
+          description: unable to remove like ensure the posts exists
+        
+
+  /posts/comment:
+    parameters:
+      - $ref: '#/components/parameters/users'
+      - $ref: '#/components/parameters/posts'
+    
+    post: 
+      description: post a comment under a photo
+      summary: |
+        people can comment on photos and they will be visible to everyone.
+      operationId: commentPhoto
+      requestBody:
+        description: you have to provide the content of the comment
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/comments'
+      responses:
+        '200':
+          description: comment posted successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: string
-    put:
-      description: follow a user
-      summary: |
-        You will follow this user and there posts will show up on your stream.
-      operationId: followUser
-      requestBody:
-        description: user you want to follow
-        required: true
-        content:
-          application/json:
-            schema:
-              type: string
-              format: user/identifier
-      responses:
-        '200': 
-          description: 'user successfully followed'
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - success
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      commentId:
+                        type: integer
+                      url:
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date-time
         '404':
-          description: 'user not found make sure user exists'
-    
-    put:
-      description: unfollow a user
-      summary: |
-        You can unfollow any user that you have already followed
-      operationId: unfollowUser
-      requestBody:
-        description: user you want to unfollow
-        required: true
-        content:
-          application/json:
-            schema:
-              type: string
-              format: user/identifier
-
+          description: post not found, make sure post exists
+  
+  /posts/comment/{commentid}:
+     
+    parameters:
+     - $ref: '#/components/parameters/comment'
+     - $ref: '#/components/parameters/users'
+    delete:
+      description: delete a comment
+      summary: | 
+        delete a photo from a post. it will no longer be visible to anyone
+      operationId: uncommentPhoto
       responses:
         '200': 
-          description: user unfollowed successfully
+          description: 'comment deleted successfully'
         '204':
-          description: you do not follow this user
+          description: 'comment already deleted previously'
+        '403':
+          description: 'unauthorised, only the user that posted the comment can delete it'
         '404':
-          description: user not found, make sure user exists
+          description: 'comment unexisting, make sure commentid is correct'
 
-    put:
-      description: ban a user
-      summary: |
-        If you ban a user you will no longer be able to see his photos.
-        He will also no longer be able to see your photos.
-      operationId: banUser
-      requestBody:
-        description: user you want to ban
-        required: true
+components:
+  schemas:
+    username:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Maria
+          pattern: 'ˆ.*?$'
+          minLength: 3
+          maxLength: 16
+        id: 
+          type: string
+          pattern: '^u[0-9]+$'
+          example: u101
+
+    posts:
+      type: object
+      properties:
+        file:
+          type: string  
+          format: binary  
+        id: 
+          type: string
+          pattern: '^p[0-9]+$'
+          example: p101
+    comments:
+      type: object
+      properties:
         content:
-          application/json:
-            schema:
-              type: string
-              format: user/identifier
-      responses:
-        '200': 
-          description: user baned successfully
-        '404':
-          description: user not found, make sure user exists
-
-    put:
-      description: unfollow a user
-      summary: |
-        You can unban any user that you have already baed
-      operationId: unban
-      requestBody:
-        description: user you want to unban
-        required: true
-        content:
-          application/json:
-            schema:
-              type: string
-              format: user/identifier
-
-      responses:
-        '200': 
-          description: user unbaned successfully
-        '204':
-          description: you have not baned this user
-        '404':
-          description: user not found, make sure user exists   
-
-    get:
-      description: get user profile
-      summary: |
-        See all the pictures a user has posted.
-        Also the number of photos posted and followers and users they are following
-      operationId: getUserProfile
-      requestBody:
-        description: user who's profile you want to see
-        required: true
-      content:
-        application/json:
-          schema:
+          type: string
+        id: 
+          type: string
+          pattern: '^c[0-9]+$'
+          example: c101
+  parameters:
+    users:
+      name: userid 
+      in: header
+      schema:
+        type: object
+        properties:
+          id: 
             type: string
-            format: user/identifier
-      responses:
-        '200':
-          description: succesfull response
-          content:
-            application/json:
-              type: array
-              items:
-                type: array
-                properties:
-                  photos:
-                    type: array
-                    items:
-                        type: string
-                        format: binary
-                  numberPhotos:
-                    type: integer
-                  followers/following:
-                    type: array
-                    items:
-                      type: string
-                      format: user/identifier 
-        '401':
-          description: you have been baned by or have baned this user, you therefore cannot view there profile 
-        '404':
-          description: user not found, make sure user exists   
-              
-    get:
-      description: get your profile
-      summary: |
-        See all the pictures a you have posted. 
-        Also the number of photos posted and followers and users you are following
-      operationId: getMyStream
-      responses:
-        '200':
-          description: succesfull response
-          content:
-            application/json:
-              type: array
-              items:
-                type: array
-                properties:
-                  photos:
-                    type: array
-                    items:
-                        type: string
-                        format: binary
-                  numberPhotos:
-                    type: integer
-                  followers/following:
-                    type: array
-                    items:
-                      type: string
-                      format: user/identifier 
+            pattern: '^u[0-9]+$'
+            example: u101
+          name:
+            type: string
+            pattern: 'ˆ.*?$'
+            minLength: 3
+            maxLength: 16
+            example: Maria
+    posts:
+      name: postid
+      in: path
+      required: true
+      schema:
+        type: object
+        properties:
+          id: 
+            type: string
+            pattern: '^p[0-9]+$'
+            example: p101
+          image:
+            type: string
+            format: binary
+    comment:
+      name: commentid
+      in: path
+      required: true
+      schema:
+        type: object
+        properties:
+          id: 
+            type: string
+            pattern: '^c[0-9]+$'
+            example: c101
+          body:
+            type: string
+                
 
 
       
