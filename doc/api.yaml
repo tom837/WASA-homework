@@ -2,7 +2,17 @@ openapi: '3.0.2'
 info:
   title: API Title
   version: '1.0'
-
+  
+tags: 
+  - name: login
+    description: login/signup
+  - name: profile
+    description: info about my profile or a users profile
+  - name: react
+    description: anything that shows your reaction to a post (comment, like)
+  - name: userInteraction
+    description: anything that allows user to interact directl with each other (follow, ban)
+    
 paths:
   /session:
     post:
@@ -18,7 +28,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/username'
+              type: string
+              pattern: 'ˆ.*?$'
+              minLength: 3
+              maxLength: 16
         required: true
       responses:
         '201':
@@ -26,76 +39,16 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  identifier:
-                    type: string
+                $ref: '#/components/schemas/user'
+                    
   /user:
-    parameters:
-      - $ref: '#/components/parameters/users'
-    get:
-      description: get user profile
-      summary: |
-        See all the pictures a user has posted.
-        Also the number of photos posted and followers and users they are following
-      operationId: getUserProfile
-      requestBody:
-        description: user who's profile you want to see
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/username'
-      responses:
-        '200':
-          description: succesfull response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: array
-                  properties:
-                    photos:
-                      type: array
-                      items:
-                          $ref: '#/components/schemas/posts'
-                    numberPhotos:
-                      type: integer
-                    followers/following:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/username'
-        '401':
-          description: you have been baned by or have baned this user, you therefore cannot view there profile 
-        '404':
-          description: user not found, make sure user exists   
   
-  /user/{id}:
-    parameters:
-      - $ref: '#/components/parameters/users'
-    put: 
-      description: change your username
-      summary: |
-        You can change your userame. It has to have a minimum of 3 letters and a maximum of 16
-        you can change it as many times as you want.
-      operationId: setMyUserName
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/username'
-      responses:
-        '200':
-          description: username changed successfully
-        '403':
-          description: unauthorised, only the owner of this account can change the username 
-              
     get:
-      description: get your profile
-      summary: |
+      summary: get your profile
+      description: |
         See all the pictures a you have posted. 
         Also the number of photos posted and followers and users you are following
+      tags: [profile]
       operationId: getMyStream
       responses:
         '200':
@@ -103,207 +56,253 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: array
-                  properties:
-                    photos:
-                      type: array
-                      items:
-                          $ref: '#/components/schemas/posts'
-                    numberPhotos:
-                      type: integer
-                    followers/following:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/username'
+                $ref: '#/components/schemas/user'
+        '404':
+          description: profile not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    put: 
+      summary: change your username
+      description: |
+        You can change your userame. It has to have a minimum of 3 letters and a maximum of 16
+        you can change it as many times as you want.
+      tags: [profile]
+      operationId: setMyUserName
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              pattern: 'ˆ.*?$'
+              minLength: 3
+              maxLength: 16
+        required: true
+      responses:
+        '200':
+          description: username changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '404':
+          description: profile not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
   
-  /user/folow:
+  /user/{userid}:
+    parameters:
+      - $ref: '#/components/parameters/users' 
+    get:
+      summary: get user profile
+      description: |
+        See all the pictures a user has posted.
+        Also the number of photos posted and followers and users they are following
+      tags: [profile]
+      operationId: getUserProfile
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '404':
+          description: user not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
+                
+  /user/{userid}/followers/:
     parameters:
       - $ref: '#/components/parameters/users'
     post:
-      description: follow a user
-      summary: |
+      summary: follow a user
+      description: |
         You will follow this user and there posts will show up on your stream.
+      tags: [userInteraction]
       operationId: followUser
-      requestBody:
-        description: user you want to follow
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/username'
       responses:
-        '200': 
+        '201': 
           description: 'user successfully followed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
         '404':
-          description: 'user not found make sure user exists'
-    
+          description: user not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
     delete:
-      description: unfollow a user
-      summary: |
+      summary: unfollow a user
+      description: |
         You can unfollow any user that you have already followed
+      tags: [userInteraction]
       operationId: unfollowUser
-      requestBody:
-        description: user you want to unfollow
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/username'
-
       responses:
         '200': 
           description: user unfollowed successfully
-        '204':
-          description: you do not follow this user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
         '404':
-          description: user not found, make sure user exists
+          description: user not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
 
-  /user/ban:
+  /user/{userid}/banedusers/:
     parameters:
       - $ref: '#/components/parameters/users'
     post:
-      description: ban a user
-      summary: |
+      summary: ban a user
+      description: |
         If you ban a user you will no longer be able to see his photos.
         He will also no longer be able to see your photos.
+      tags: [userInteraction]
       operationId: banUser
-      requestBody:
-        description: user you want to ban
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/username'
       responses:
-        '200': 
+        '201': 
           description: user baned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
         '404':
-          description: user not found, make sure user exists
+          description: user not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
 
     delete:
-      description: unban a user
-      summary: |
+      summary: unban a user
+      description: |
         You can unban any user that you have already baed
+      tags: [userInteraction]
       operationId: unbanUser
-      requestBody:
-        description: user you want to unban
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/username'
-
       responses:
         '200': 
           description: user unbaned successfully
-        '204':
-          description: you have not baned this user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
         '404':
-          description: user not found, make sure user exists   
-  /posts:
-    parameters: 
-        - $ref: '#/components/parameters/users' 
+          description: user not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /photos:
     post:
-      description: post a new photo
-      summary: | 
+      summary: post a new photo
+      description: | 
         post a new photo where peope will be able to see that photo,
         like and comment on that photo.
+      tags: [profile]
       operationId: uploadPhoto
       requestBody:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/posts'
+              $ref: '#/components/schemas/photo'
         required: true 
       responses:
-        '200':
+        '201':
           description: photo posted successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    enum:
-                      - success
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      photoId:
-                        type: integer
-                      url:
-                        type: string
-                      createdAt:
-                        type: string
-                        format: date-time
-  /posts/{photoId}:  
+                $ref: '#/components/schemas/photo'
+
+  /photos/{photoId}:  
     parameters:
-        - $ref: '#/components/parameters/posts'
-        - $ref: '#/components/parameters/users'
+        - $ref: '#/components/parameters/photo'
     delete:
-      description: delete a photo
-      summary: | 
+      summary: delete a photo
+      description: | 
         delete a photo from the website. deleting a photo deletes also 
         all it's likes and comments.
+      tags: [profile]
       operationId: deletePhoto
-
       responses:
         '200': 
           description: 'photo deleted successfully'
-        '204':
-          description: 'photo already deleted previously'
-        '403':
-          description: 'unauthorised, only the user that posted the photo can delete it'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
         '404':
-          description: 'photo unexisting, make sure photoId is correct'
+          description: post not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
   
-  /posts/like:
+  /photos/{photoId}/likes/:
     parameters:
-      - $ref: '#/components/parameters/users'
-      - $ref: '#/components/parameters/posts'
+      - $ref: '#/components/parameters/photo'
 
     post:
-      description: like a photo
-      summary: |
+      summary: like a photo
+      description: |
         if you enjoyed a photo you can put a like on it
         to show everyone that you enjoed that post.
         likes can always be removed.
+      tags: [react]
       operationId:  likePhoto
       responses:
-        '200':
+        '201':
           description: photo liked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/photo'
         '404':
-          description: post not found, please make sure it exists.
+          description: post not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
 
     delete:
-      description: remove a like from a photo
-      summary: |
+      summary: remove a like from a photo
+      description: |
         if you changed your mind about a post
         or liked by accident you can remove any like you put.
+      tags: [react]
       operationId: unlikePhoto
       responses:
         '200':
           description: like removed successfully
-        '204':
-          description: you have never liked this post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/photo'
         '404':
-          description: unable to remove like ensure the posts exists
-        
+          description:  post or like not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
 
-  /posts/comment:
+  /photos/{photoId}/comments/:
     parameters:
-      - $ref: '#/components/parameters/users'
-      - $ref: '#/components/parameters/posts'
-    
+      - $ref: '#/components/parameters/photo'
     post: 
-      description: post a comment under a photo
-      summary: |
+      summary: post a comment under a photo
+      description: |
         people can comment on photos and they will be visible to everyone.
+      tags: [react]
       operationId: commentPhoto
       requestBody:
         description: you have to provide the content of the comment
@@ -312,118 +311,126 @@ paths:
             schema:
               $ref: '#/components/schemas/comments'
       responses:
-        '200':
+        '201':
           description: comment posted successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    enum:
-                      - success
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      commentId:
-                        type: integer
-                      url:
-                        type: string
-                      createdAt:
-                        type: string
-                        format: date-time
+                $ref: '#/components/schemas/photo'
         '404':
-          description: post not found, make sure post exists
-  
-  /posts/comment/{commentid}:
-     
-    parameters:
-     - $ref: '#/components/parameters/comment'
-     - $ref: '#/components/parameters/users'
+          description: post not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          
     delete:
-      description: delete a comment
-      summary: | 
+      summary: delete a comment
+      description: | 
         delete a photo from a post. it will no longer be visible to anyone
+      tags: [react]
       operationId: uncommentPhoto
       responses:
         '200': 
           description: 'comment deleted successfully'
-        '204':
-          description: 'comment already deleted previously'
-        '403':
-          description: 'unauthorised, only the user that posted the comment can delete it'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/photo'
         '404':
-          description: 'comment unexisting, make sure commentid is correct'
+          description: post or comment not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
 
 components:
   schemas:
-    username:
+    user:
       type: object
       properties:
-        name:
+        username: 
           type: string
-          example: Maria
           pattern: 'ˆ.*?$'
           minLength: 3
           maxLength: 16
+          description: this is the public username everyone will be able to see
         id: 
           type: string
           pattern: '^u[0-9]+$'
           example: u101
-
-    posts:
+          description: this is the unique identifier for users
+        email:
+          type: string
+          format: email
+          description: the eamail adresse of the user
+        profilePicture:
+          type: string 
+          format: binary
+          description: every user can have a profile picture that will be show with it's user name
+    photo:
       type: object
       properties:
         file:
           type: string  
           format: binary  
+          description: this is the photo itself
         id: 
           type: string
           pattern: '^p[0-9]+$'
           example: p101
+          description: this is the unique identifier for photos
+        user:
+          $ref: '#/components/schemas/user/properties/id'
+          description: every photo is associated to the user that posted it
+  
     comments:
       type: object
       properties:
-        content:
+        body:
           type: string
+          description: what the comment will say
         id: 
           type: string
           pattern: '^c[0-9]+$'
           example: c101
+          description: this is the unique identifier for comments
+    error:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: the satus code
+        error:
+          type: string
+          description: what error accured
+        message:
+          type: string
+          description: the message associated to the error
+        path: 
+          type: string
+          description: the path where the error accured
+      
   parameters:
     users:
       name: userid 
-      in: header
-      schema:
-        type: object
-        properties:
-          id: 
-            type: string
-            pattern: '^u[0-9]+$'
-            example: u101
-          name:
-            type: string
-            pattern: 'ˆ.*?$'
-            minLength: 3
-            maxLength: 16
-            example: Maria
-    posts:
-      name: postid
       in: path
       required: true
       schema:
         type: object
         properties:
           id: 
-            type: string
-            pattern: '^p[0-9]+$'
-            example: p101
-          image:
-            type: string
-            format: binary
+            $ref: '/components/schemas/user/properties/id'
+    photo:
+      name: photoId
+      in: path
+      required: true
+      schema:
+        type: object
+        properties:
+          id: 
+            $ref: '#/components/schemas/photo/properties/id'
+
     comment:
       name: commentid
       in: path
@@ -432,12 +439,18 @@ components:
         type: object
         properties:
           id: 
-            type: string
-            pattern: '^c[0-9]+$'
-            example: c101
-          body:
-            type: string
+            $ref: '#/components/schemas/comments/properties/id'
+
                 
+                
+  securitySchemes:
+    bearerAuth:            
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    
+
+security:
+  - bearerAuth: []
 
 
       
