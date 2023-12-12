@@ -44,10 +44,9 @@ paths:
   /user:
   
     get:
-      summary: get your profile
+      summary: get your stream
       description: |
-        See all the pictures a you have posted. 
-        Also the number of photos posted and followers and users you are following
+        See the pictures of users that you are following.
       tags: [profile]
       operationId: getMyStream
       responses:
@@ -56,7 +55,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
+                $ref: '#/components/schemas/photo'
         '404':
           description: profile not found
           content:
