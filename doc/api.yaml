@@ -419,7 +419,7 @@ components:
         type: object
         properties:
           id: 
-            $ref: '/components/schemas/user/properties/id'
+            $ref: '#/components/schemas/user/properties/id'
     photo:
       name: photoId
       in: path
