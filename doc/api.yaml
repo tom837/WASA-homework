@@ -42,7 +42,6 @@ paths:
                 $ref: '#/components/schemas/user'
                     
   /user:
-  
     get:
       summary: get your stream
       description: |
@@ -359,14 +358,7 @@ components:
           pattern: '^u[0-9]+$'
           example: u101
           description: this is the unique identifier for users
-        email:
-          type: string
-          format: email
-          description: the eamail adresse of the user
-        profilePicture:
-          type: string 
-          format: binary
-          description: every user can have a profile picture that will be show with it's user name
+
     photo:
       type: object
       properties:
