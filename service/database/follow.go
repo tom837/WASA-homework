@@ -1,3 +1,3 @@
 package database
 
-func (db *appdbimpl) follow()
+//func (db *appdbimpl) follow()

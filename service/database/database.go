@@ -25,18 +25,16 @@ func New(db *sql.DB) (AppDatabase, error) {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
 
-	tabel_users:= "CREATE IF NOT EXIST users(
-		id TEXT PRIMARY KEY,
-		username TEXT NOT NULL);"
-	
-	_,err=db.Exec(tabltabel_users)	
-	if err!= nil{
-		return nil, fmt.Errorf(err)
+	tabel_users := "CREATE IF NOT EXIST users(id TEXT PRIMARY KEY,username TEXT NOT NULL);"
+
+	_, err := db.Exec(tabel_users)
+	if err != nil {
+		return nil, fmt.Errorf("err")
 	}
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
+	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE example_table (id INTEGER NOT NULL PRIMARY KEY, name TEXT);`
 		_, err = db.Exec(sqlStmt)
