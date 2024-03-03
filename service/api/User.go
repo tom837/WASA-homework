@@ -1,4 +1,4 @@
-package API
+package api
 
 type User struct {
 	UserName string "json:\"name\""

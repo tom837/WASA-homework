@@ -1,6 +1,7 @@
 package main
 
 import (
+	"WASA-homework/service/api"
 	"WASA-homework/service/database"
 	"WASA-homework/service/globaltime"
 	"context"
@@ -24,7 +25,6 @@ func main() {
 	if err := run(); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "error: ", err)
 		os.Exit(1)
-
 	}
 }
 
@@ -36,7 +36,6 @@ func main() {
 // * starts the principal web server (using the service/api.Router.Handler() for HTTP handlers)
 // * waits for any termination event: SIGTERM signal (UNIX), non-recoverable server error, etc.
 // * closes the principal web server
-
 func run() error {
 	rand.Seed(globaltime.Now().UnixNano())
 	// Load Configuration and defaults
@@ -89,7 +88,7 @@ func run() error {
 	serverErrors := make(chan error, 1)
 
 	// Create the API router
-	apirouter, err := API.New(API.Config{
+	apirouter, err := api.New(api.Config{
 		Logger:   logger,
 		Database: db,
 	})
