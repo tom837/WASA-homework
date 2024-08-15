@@ -20,6 +20,14 @@ type AppDatabase interface {
 	Upload(user string, photo []byte) (error)
 	GetPhotos()(*sql.Rows, error)
 	Remove_photo(id string, user_id string)(error)
+	LikePhoto(user string, photo string) (error)
+	GetLikes()(*sql.Rows, error)
+	Unlike(user string, photo string)(error)
+	AddComment(user string, photo string, comment string) (error)
+	GetComments()(*sql.Rows, error)
+	Remove_comment(id string, user_id string)(error)
+	GetProfile(user string)(*sql.Rows, error)
+	GetStream(user string)(*sql.Rows, error)
 }
 
 type appdbimpl struct {
@@ -37,6 +45,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 	Follower_table := "CREATE TABLE IF NOT EXISTS followers(follower_id INT NOT NULL, followed_id INT NOT NULL, PRIMARY KEY (follower_id, followed_id), FOREIGN KEY (follower_id) REFERENCES users(id), FOREIGN KEY (followed_id) REFERENCES users(id));"
 	Banned_table :="CREATE TABLE IF NOT EXISTS baned(follower_id INT NOT NULL, followed_id INT NOT NULL, PRIMARY KEY (follower_id, followed_id), FOREIGN KEY (follower_id) REFERENCES users(id), FOREIGN KEY (followed_id) REFERENCES users(id));"
 	Photo_table := "CREATE tABLE IF NOT EXISTS photos(id INT NOT NULL PRIMARY KEY,user_id INT NOT NULL, photo BYTEA NOT NULL, uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id));"
+	Like_table :="CREATE TABLE IF NOT EXISTS likes(user_id INT NOT NULL, photo_id INT NOT NULL, PRIMARY KEY (user_id, photo_id), FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (photo_id) REFERENCES photos(id));"
+	Comment_table := "CREATE tABLE IF NOT EXISTS comments(id INT NOT NULL PRIMARY KEY,user_id INT NOT NULL,photo_id INT NOT NULL, comment TEXT NOT NULL , FOREIGN KEY (user_id) REFERENCES users(id),FOREIGN KEY (photo_id) REFERENCES photos(id));"
 	_, err := db.Exec(tabel_users)
 	if err != nil {
 		return nil, err
@@ -50,6 +60,14 @@ func New(db *sql.DB) (AppDatabase, error) {
 		return nil, err
 	}
 	_, err = db.Exec(Photo_table)
+	if err != nil {
+		return nil, err
+	}
+	_, err = db.Exec(Like_table)
+	if err != nil {
+		return nil, err
+	}
+	_, err = db.Exec(Comment_table)
 	if err != nil {
 		return nil, err
 	}

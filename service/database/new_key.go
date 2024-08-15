@@ -4,14 +4,14 @@ import (
 	"database/sql"
 	"fmt"
 	"regexp"
+	"slices"
 	"strconv"
 )
 
 func generateNewKey(db *appdbimpl, prefix string, database string) (string, error) {
 	// Query to find the highest key
-	var maxKey string
-	query := fmt.Sprintf("SELECT id FROM %s ORDER BY id DESC LIMIT 1", database)
-	err := db.c.QueryRow(query).Scan(&maxKey)
+	query:= fmt.Sprintf("SELECT id FROM %s", database)
+	rows, err:= db.c.Query(query)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// No entries exist yet, start from u1
@@ -20,22 +20,29 @@ func generateNewKey(db *appdbimpl, prefix string, database string) (string, erro
 		// Handle other errors
 		return "", err
 	}
-
-	// Extract the numeric part from the key
-	re := regexp.MustCompile(fmt.Sprintf(`^%s(\d+)$`, prefix))
-	matches := re.FindStringSubmatch(maxKey)
-	if len(matches) != 2 {
-		// The key format is not as expected
-		return "", fmt.Errorf("unexpected key format: %s", maxKey)
+	lst:= []int{}
+	var id string
+	for rows.Next() { //loop through all the users
+		err = rows.Scan(&id)
+		if err != nil {
+			return "", err
+		}
+		// Extract the numeric part from the key
+		re := regexp.MustCompile(fmt.Sprintf(`^%s(\d+)$`, prefix))
+		matches := re.FindStringSubmatch(id)
+		if len(matches) != 2 {
+			// The key format is not as expected
+			return "", fmt.Errorf("unexpected key format: %s", id)
+		}
+		// Convert the numeric part to an integer
+		num, err := strconv.Atoi(matches[1])
+		if err != nil {
+			return "", err
+		}
+		lst = append(lst, num) //add the json to the final list
 	}
-
-	// Convert the numeric part to an integer and increment it
-	num, err := strconv.Atoi(matches[1])
-	if err != nil {
-		return "", err
-	}
-
 	// Generate the new key
-	newKey := fmt.Sprintf("%s%d", prefix, num+1)
+	max:=slices.Max(lst)
+	newKey := fmt.Sprintf("%s%d", prefix, max+1)
 	return newKey, nil
 }

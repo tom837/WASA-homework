@@ -39,5 +39,15 @@ func (db *appdbimpl) Remove_photo(id string, user_id string)(error){
 	}
 	query = "DELETE FROM photos WHERE id=?"
 	_, err= db.c.Exec(query, id)
+	if err!=nil{
+		return err
+	}
+	query = "DELETE FROM likes WHERE photo_id=?"
+	_, err= db.c.Exec(query, id)
+	if err!=nil{
+		return err
+	}
+	query = "DELETE FROM comments WHERE photo_id=?"
+	_, err= db.c.Exec(query, id)
 	return err
 }

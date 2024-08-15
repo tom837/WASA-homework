@@ -17,7 +17,7 @@ tags:
     description: anything that allows user to interact directl with each other (follow, ban)
     
 paths:
-  /session:
+  /login:
     post:
       tags: ["login"]
       summary: Logs in the user

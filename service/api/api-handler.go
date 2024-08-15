@@ -10,6 +10,8 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/", rt.getHelloWorld)
 	//rt.router.GET("/user", rt.Getusername)
 	rt.router.PUT("/user", rt.SetMyUserName)
+	rt.router.GET("/user/:id", rt.Profile)
+	rt.router.GET("/user", rt.Stream)
 	rt.router.GET("/users", rt.Users_lst)
 	rt.router.POST("/login", rt.Login)
 	rt.router.GET("/context", rt.wrap(rt.getContextReply))
@@ -23,6 +25,12 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/photos", rt.Photo_lst)
 	rt.router.POST("/photos", rt.UploadPhoto)
 	rt.router.DELETE("/photos/:id", rt.DeletePhoto)
+	rt.router.POST("/photos/:id/likes", rt.Like)
+	rt.router.GET("/photos/likes", rt.Like_lst)
+	rt.router.DELETE("/photos/:id/likes", rt.DeleteLike)
+	rt.router.POST("/photos/:id/comments", rt.Comment)
+	rt.router.GET("/photos/comments", rt.Comment_lst)
+	rt.router.DELETE("/photos/:id/comments", rt.DeleteComment)
 
 
 	// Special routes
