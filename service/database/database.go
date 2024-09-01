@@ -23,7 +23,7 @@ type AppDatabase interface {
 	LikePhoto(user string, photo string) (error)
 	GetLikes()(*sql.Rows, error)
 	Unlike(user string, photo string)(error)
-	AddComment(user string, photo string, comment string) (error)
+	AddComment(user string, photo string, comment string) (string, error)
 	GetComments(photoid string)(*sql.Rows, error)
 	Remove_comment(id string, user_id string)(error)
 	GetProfile(user string)(*sql.Rows, string, error)

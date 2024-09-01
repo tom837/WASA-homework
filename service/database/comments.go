@@ -7,30 +7,30 @@ import (
 )
 
 
-func (db *appdbimpl) AddComment(user string, photo string, comment string) (error){
+func (db *appdbimpl) AddComment(user string, photo string, comment string) (string, error){
 	query:="SELECT id FROM photos WHERE id=?"
 	err := db.c.QueryRow(query, photo).Scan(&photo)
 	if err != nil{
 		if err == sql.ErrNoRows{
-			return fmt.Errorf("Photo not found")
+			return "", fmt.Errorf("Photo not found")
 		}else{
-			return err
+			return "", err
 		}
 	}
 	newKey, err := generateNewKey(db, "c", "comments")
 	query = `INSERT INTO comments (id,user_id, photo_id,comment) VALUES (?, ?, ?, ?);`
 	_, err = db.c.Exec(query,newKey, user, photo, comment)
-	return err
+	return newKey, err
 }
 
 
 
 func (db *appdbimpl) GetComments(photoid string)(*sql.Rows, error){
 	query := "SELECT id,user_id,comment  FROM comments WHERE photo_id=?;"
-	row, err:= db.c.Query(query,photoid) 
+	row, err:= db.c.Query(query,photoid)
 	return row,err
-	
 }
+
 
 
 

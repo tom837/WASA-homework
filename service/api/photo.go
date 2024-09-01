@@ -11,6 +11,7 @@ import (
 )
 
 func (rt *_router) UploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
+	fmt.Println("loading")
 	user_id :=rt.UserHandler(w,r,ps)
 	photo, err := io.ReadAll(r.Body)
 	if err != nil {

@@ -78,6 +78,7 @@
         <photo
         v-for="photo in photos"
           :key="photo.Id"
+          :photoId="photo.Id"
           :username="photo.User"
           :photoBlob="photo.Photo"
           :likes ="getLikesCount(photo.Likes)"

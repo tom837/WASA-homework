@@ -17,6 +17,10 @@
                     <i class="bi bi-chat icon-button" @click="showcomments"></i>
                     <p>{{ numcomments }} Comments</p>
                 </div>
+                <div v-if="owned">
+                    <i class="bi bi-trash icon-button" @click="deletephoto"></i>
+                    <p>Delete</p>
+                </div>
             </div>
         </div>
     </div>
@@ -28,7 +32,7 @@
     export default{
         props:{
             username :{
-                type: String,
+                type: [String, null],
                 required : true
             },
             photoBlob : {
@@ -46,6 +50,15 @@
             comments:{
                 type: Number,
                 required: true
+            },
+            photoId:{
+                type: String,
+                required: true
+            },
+            owned:{
+                type:Boolean,
+                required: false,
+                default: false
             }
         },
         data() {
@@ -65,12 +78,15 @@
                 }
             },
             handleLike() {
-                this.$emit('like', { photo: this.key, liked: this.isLiked});
+                this.$emit('like', { photo: this.photoId, liked: this.isLiked});
                 this.isLiked=!this.isLiked
                 this.updateLikesCount();
             },
             showcomments(){
                 this.$router.push({ name: 'Comments', params: { photoId: this.photoId } });
+            },
+            deletephoto(){
+                this.$emit('delphoto',{id: this.photoId})
             }
         },
         mounted() {
@@ -122,8 +138,7 @@
 
 
 .icon-button {
-  font-size: 24px;
-  color: red;
+  font-size: 25px;
   cursor: pointer;
   padding: 10px;
   border-radius: 50%; /* Makes it round */
@@ -145,6 +160,11 @@
 .bi-chat{
     font-size: 25px;
     margin-left:8px;
+}
+
+.bi-trash {
+  font-size: 25px;
+  margin-left:8px;
 }
 
 .actions {

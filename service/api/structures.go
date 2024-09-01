@@ -30,6 +30,7 @@ type Like struct{
 
 type Comment struct{
 	Id string "json\"id\""
+	Userid string "json\"userid\""
 	User string "json\"userid\""
 	Comment string "json\"comment\""
 }

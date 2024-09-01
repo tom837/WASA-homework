@@ -19,18 +19,22 @@ func (rt *_router) Comment(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 	defer r.Body.Close()
-	err = rt.db.AddComment(user, photo, comment.Comment)
+	id,err := rt.db.AddComment(user, photo, comment.Comment)
 	if err!=nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w,"Comment added successfully!")
+	data := Comment{
+		Id: id,
+		Userid:user,
+		Comment:comment.Comment,	}
+	w.Header().Set("Content-Type", "encoding/json")
+	err = json.NewEncoder(w).Encode(data)
 
 }
 
 func (rt *_router) Comment_lst(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
 	photoid := ps.ByName("id")
-	fmt.Println(photoid)
 	rows,err := rt.db.GetComments(photoid) //sql rows with all the users registered
 	var user string
 	var comment string
@@ -47,9 +51,14 @@ func (rt *_router) Comment_lst(w http.ResponseWriter, r *http.Request, ps httpro
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
+		username,err := rt.db.GetName(user)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		data = Comment{  //create a json for the user
 			Id : id,
-			User: user,
+			Userid: user,
+			User: username,
 			Comment: comment,
 		}
 		lst = append(lst, data) //add the json to the final list

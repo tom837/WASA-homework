@@ -8,7 +8,7 @@ export async function login(username){
                 name:username.name,
                 });
             console.log('Response:', response.data);
-            await saveuserid(response.data.ID)
+            await saveuserid(response.data.ID, response.data.name)
         }catch (e){
             throw new Error(e.toString())
         }

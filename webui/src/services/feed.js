@@ -4,7 +4,6 @@ import axios from './axios';
 export async function feed(){
     try{
         let id = await getuserid();
-        console.log(id)
         let response = await axios.get("/user",{
             headers :{
                 "Authorization" : id
@@ -17,3 +16,36 @@ export async function feed(){
         throw new Error(e.toString());
     }
 };
+
+
+export async function profile(){
+    try{
+        let id = await getuserid();
+        let response = await axios.get(`/user/${id}`,{
+            headers:{
+                "Authorization": id
+            }
+        });
+        console.log("response", response)
+        return response.data
+    }catch(e){
+        throw new Error(e)
+    }
+}
+
+
+export async function deletepic(photoid){
+    let id = await getuserid();
+    try{
+        let response = await axios.delete(`/photos/${photoid}`,{
+            headers:{
+                "Authorization":id
+            }
+        });
+        console.log('Response:', response);
+        return response.status;
+    }catch (e){
+        throw new Error(e.toString());
+    }
+}
+

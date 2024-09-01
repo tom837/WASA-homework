@@ -1,51 +1,66 @@
 <template>
-    <div class="page-container">
+    <div>
         <div class="comment-container">
-            <h1 class="username">{{ username }}</h1>
-            <p>{{ comment }} </p>
+                <h1 class="username">{{ username }}</h1>
+                <p style="font-size:30px">{{ comment }} </p>
+            <div v-if="owner">
+                <p></p>
+                <i class="bi bi-trash icon-button" @click="deletecomment"></i>Delete
+            </div>
         </div>
-        <form @submit.prevent="submitComment">
-                    <div class="form-group">
-                        <label for="comment">Comment</label>
-                            <input
-                                type="text"
-                                v-model="new_comment"
-                                class="form-control"
-                                id="comment"
-                                placeholder="Enter your comment"
-                                required
-                            />
-                    </div>
-                <button type="submit" class="btn btn-primary btn-block">Comment</button>
-        </form>
     </div>
 </template>
 
 <script>
     export default{
         props:{
+            commentid:{
+                type: String,
+                required:true
+            },
             username :{
                 type: String,
                 required : true
             },
-            Comment : {
+            comment : {
                 type : String,
                 required : true
+            },
+            owner:{
+                type: Boolean,
+                required: true
             },
         },
         data() {
             return {
-                Comment: '',
             };
         },
         methods: {
-            submitComment() {
-                this.$emit('comment', { photo: this.new_comment});
+            deletecomment(){
+                this.$emit('deletecomment', {id: this.commentid});
             }
         },
     };
 </script>
 
+
+<style>
+.bi-trash {
+  font-size: 25px;
+  cursor: pointer;
+  justify-content: right;
+}
+
+.comment-container{
+    border: 1px solid #ccc;
+    padding: 10px;
+    justify-content: left;
+    align-items: center;
+    border-radius: 8px;
+}
+
+
+</style>
 
 
 
