@@ -29,9 +29,10 @@ func (rt *_router) Comment(w http.ResponseWriter, r *http.Request, ps httprouter
 }
 
 func (rt *_router) Comment_lst(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
-	rows,err := rt.db.GetComments() //sql rows with all the users registered
+	photoid := ps.ByName("id")
+	fmt.Println(photoid)
+	rows,err := rt.db.GetComments(photoid) //sql rows with all the users registered
 	var user string
-	var photo string
 	var comment string
 	var id string
 	var data Comment
@@ -42,14 +43,13 @@ func (rt *_router) Comment_lst(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 	defer rows.Close()
 	for rows.Next() { //loop through all the users
-		err = rows.Scan(&id,&user,&photo,&comment)
+		err = rows.Scan(&id,&user,&comment)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		data = Comment{  //create a json for the user
 			Id : id,
 			User: user,
-			Photo: photo,
 			Comment: comment,
 		}
 		lst = append(lst, data) //add the json to the final list

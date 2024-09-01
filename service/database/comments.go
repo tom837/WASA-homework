@@ -25,9 +25,9 @@ func (db *appdbimpl) AddComment(user string, photo string, comment string) (erro
 
 
 
-func (db *appdbimpl) GetComments()(*sql.Rows, error){
-	query := "SELECT *  FROM comments;"
-	row, err:= db.c.Query(query) // get all photos in the database
+func (db *appdbimpl) GetComments(photoid string)(*sql.Rows, error){
+	query := "SELECT id,user_id,comment  FROM comments WHERE photo_id=?;"
+	row, err:= db.c.Query(query,photoid) 
 	return row,err
 	
 }

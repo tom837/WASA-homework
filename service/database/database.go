@@ -8,7 +8,7 @@ import (
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
-	GetName() (string, error)
+	GetName(id string) (string, error)
 	SetName(name string) (string, error)
 	DoLogin(name string) (string, error)
 	Getusers()(*sql.Rows, error)
@@ -24,9 +24,9 @@ type AppDatabase interface {
 	GetLikes()(*sql.Rows, error)
 	Unlike(user string, photo string)(error)
 	AddComment(user string, photo string, comment string) (error)
-	GetComments()(*sql.Rows, error)
+	GetComments(photoid string)(*sql.Rows, error)
 	Remove_comment(id string, user_id string)(error)
-	GetProfile(user string)(*sql.Rows, error)
+	GetProfile(user string)(*sql.Rows, string, error)
 	GetStream(user string)(*sql.Rows, error)
 }
 

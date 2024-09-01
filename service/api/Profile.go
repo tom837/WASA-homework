@@ -14,31 +14,36 @@ import (
 
 
 func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, user string)([]byte){
-	rows,err := rt.db.GetProfile(user) //sql rows with all the users registered
+	var name string
+	rows,name,err := rt.db.GetProfile(user) //sql rows with all the users registered
 	var comment sql.NullString
-	var photo string
+	var id string
+	var photo []byte
 	var like sql.NullString
 	var time time.Time
 	var data Post
 	lst := []Post{}  //list we will return with all the users
 	if err != nil {
+		var nothing []byte
 		// Handle error
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		panic("Stopping function due to panic")
+		return nothing
 	}
 	defer rows.Close()
 	for rows.Next() { //loop through all the users
-		err = rows.Scan(&photo,&like,&comment,&time)
+		err = rows.Scan(&photo,&id,&like,&comment,&time)
 		if err != nil {
+			var nothing []byte
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			panic("Stopping function due to panic")
+			return nothing
 		}
 		data = Post{  //create a json for the user
-			User: user,
-			Photo: photo,
-			Likes: like.String,
-			Comments: comment.String,
-			Time: time,
+			User: 		name,
+			Id: 		id,
+			Photo: 		photo,
+			Likes:		like.String,
+			Comments: 	comment.String,
+			Time: 		time,
 		}
 		lst = append(lst, data) //add the json to the final list
 	}
@@ -46,10 +51,11 @@ func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httpro
 	aggregated := make(map[string]*AggregatedData)
 
 	for _, entry := range lst {
-		key := entry.User + "-" + entry.Photo
+		key := entry.User + "-" + entry.Id
 		if _, exists := aggregated[key]; !exists {
 			aggregated[key] = &AggregatedData{
 				User:     entry.User,
+				Id:       entry.Id,
 				Photo:    entry.Photo,
 				Likes:    []string{},
 				Comments: []string{},
@@ -77,8 +83,9 @@ func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httpro
    	// Convert the result to JSON
    	jsonData, err := json.Marshal(result)
    	if err != nil {
+		var nothing []byte
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		panic("Stopping function due to panic")
+		return nothing
    	}
 	return jsonData
 }
@@ -98,13 +105,9 @@ func (rt *_router) Profile(w http.ResponseWriter, r *http.Request, ps httprouter
 	profile := rt.UserProfile(w,r,ps,user)
 	if string(profile) == "null"{
 		fmt.Fprintf(w,"No posts yet")
-	
 	}else{
 		fmt.Fprintf(w,string(profile))
 	}
-	
-
-
 }
 
 
@@ -154,25 +157,27 @@ func (rt *_router) Stream(w http.ResponseWriter, r *http.Request, ps httprouter.
 			}
 		}
     }
-	var photos []AggregatedData
-    err = json.Unmarshal(other, &photos)
-    if err != nil {
-        log.Fatal(err)
-    }
+	if other !=nil{
+		var photos []AggregatedData
+		err = json.Unmarshal(other, &photos)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-    // Sort the photos slice by the Time field
-    sort.Slice(photos, func(i, j int) bool {
-        return photos[i].Time.After(photos[j].Time)
-    })
+		// Sort the photos slice by the Time field
+		sort.Slice(photos, func(i, j int) bool {
+			return photos[i].Time.After(photos[j].Time)
+		})
 
-    // Marshal the sorted slice back into JSON
-    sortedJSON, err := json.MarshalIndent(photos, "", "    ")
-    if err != nil {
-        log.Fatal(err)
-    }
+		// Marshal the sorted slice back into JSON
+		sortedJSON, err := json.MarshalIndent(photos, "", "    ")
+		if err != nil {
+			log.Fatal(err)
+		}
 
 
-	fmt.Fprintf(w,string(sortedJSON))
+		fmt.Fprintf(w,string(sortedJSON))
+	}
 	
 	
 

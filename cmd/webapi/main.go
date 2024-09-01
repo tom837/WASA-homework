@@ -13,7 +13,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-
 	"github.com/ardanlabs/conf"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
@@ -22,7 +21,6 @@ import (
 // main is the program entry point. The only purpose of this function is to call run() and set the exit code if there is
 // any error
 func main() {
-	fmt.Println("testm")
 	if err := run(); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "error: ", err)
 		os.Exit(1)
@@ -38,6 +36,8 @@ func main() {
 // * waits for any termination event: SIGTERM signal (UNIX), non-recoverable server error, etc.
 // * closes the principal web server
 func run() error {
+	fs := http.FileServer(http.Dir("./dist"))
+    http.Handle("/", fs)
 	rand.Seed(globaltime.Now().UnixNano())
 	// Load Configuration and defaults
 	cfg, err := loadConfiguration()

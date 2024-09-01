@@ -50,6 +50,7 @@ func (db *appdbimpl) Unlike(user string, photo string)(error){
 			return err
 		}
 	}
+	
 	query = "SELECT user_id FROM likes WHERE photo_id=? AND user_id=?"
 	err = db.c.QueryRow(query,photo,user).Scan(&tmp)
 	if err!= nil{

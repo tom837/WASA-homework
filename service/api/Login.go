@@ -4,11 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/julienschmidt/httprouter"
-	"github.com/gorilla/sessions"
 	"fmt"
 )
 
-var store = sessions.NewCookieStore([]byte("super-secret-key"))
+//var store = sessions.NewCookieStore([]byte("super-secret-key"))
 
 func (rt *_router) AssertNameCorrect(name string) (bool) {
 	if len(name)<3 || len(name)>16{
@@ -27,20 +26,20 @@ func (rt *_router) Login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 	}
 	defer r.Body.Close()
 	if rt.AssertNameCorrect(user.UserName){
-		fmt.Fprintf(w,"Username hase to be between 3 and 16 characters long")
+		err=fmt.Errorf("Username has to be between 3 and 16 characters long")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	id, err := rt.db.DoLogin(user.UserName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	
 	//Store id into session
-	session, _ := store.Get(r, "session-name")
-	session.Values["userID"] = id
-	session.Save(r, w)
-	fmt.Fprintf(w,"You logend in successfully!")
-	
+	/*
+	use:=rt.UserHandler(w,r,ps)
+	fmt.Println(use)
+	*/
+	//fmt.Fprintf(w,"You logend in successfully!")
 	//Make usename and id into User structure
 	data := User{
 		UserName: user.UserName,
