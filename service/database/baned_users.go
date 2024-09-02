@@ -45,11 +45,10 @@ func (db *appdbimpl) Ban(user string, foll string) (error){
 }
 
 
-func (db *appdbimpl) GetBanned()(*sql.Rows, error){
-	query := "SELECT * FROM followers;"
-	row, err:= db.c.Query(query) // get all users in the database
+func (db *appdbimpl) GetBanned(id string)(*sql.Rows, error){
+	query := "SELECT followed_id FROM baned WHERE follower_id=?;"
+	row, err:= db.c.Query(query,id)
 	return row,err
-	
 }
 
 

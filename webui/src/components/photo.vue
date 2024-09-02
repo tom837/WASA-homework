@@ -90,13 +90,10 @@
             }
         },
         mounted() {
-            // Create a URL for the binary data
             const decodedString = atob(this.photoBlob);
-            const binaryDataStartIndex = decodedString.indexOf("image/jpeg") + "image/jpeg".length;
-            const binaryDataStart = decodedString.indexOf("\r\n\r\n", binaryDataStartIndex) + 4;
-            const jpegBinaryData = decodedString.substring(binaryDataStart);
-            this.photoSrc = `data:image/jpeg;base64,${btoa(jpegBinaryData)}`;
-        },
+            const jsonObject = JSON.parse(decodedString);
+            this.photoSrc = `data:image/jpeg;base64,${jsonObject.photo}`;
+        }
     };
 </script>
 
@@ -120,13 +117,14 @@
     justify-content: center;
     align-items: center;
     border-radius: 8px;
+    height: 100vh;
 }
 
 .photo{
     padding: 10px;
     text-align: center;
     max-width: 100%;
-    height: 900PX;
+    height: auto;
     border-radius: 8px;
 }
 

@@ -28,6 +28,8 @@ type AppDatabase interface {
 	Remove_comment(id string, user_id string)(error)
 	GetProfile(user string)(*sql.Rows, string, error)
 	GetStream(user string)(*sql.Rows, error)
+	Following(id string)(*sql.Rows, error)
+	GetBanned(id string)(*sql.Rows, error)
 }
 
 type appdbimpl struct {

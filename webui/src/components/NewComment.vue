@@ -24,12 +24,14 @@
         data(){
             return {
                 UserName: '',
+                new_comment: '',
                 errorMessage: ''
             };
         },
         methods: {
             submitComment() {
                 this.$emit('comment', {content: this.new_comment});
+                this.new_comment = '';
                 this.errorMessage = '';
             }
         }

@@ -72,7 +72,7 @@
 <template>
     <div>
       <div v-if="photos===''">
-        <p class="position">Follow more users to see theire photos</p>
+        <p class="position">Follow more users to see their photos</p>
       </div>
       <div v-else>
         <photo

@@ -18,9 +18,8 @@ export async function feed(){
 };
 
 
-export async function profile(){
+export async function profile(id){
     try{
-        let id = await getuserid();
         let response = await axios.get(`/user/${id}`,{
             headers:{
                 "Authorization": id
@@ -49,3 +48,13 @@ export async function deletepic(photoid){
     }
 }
 
+
+export async function getuserlist(){
+    try{
+        let response = await axios.get('/users')
+        console.log('response:', response)
+        return response.data
+    }catch(e){
+        throw new Error(e.toString())
+    }
+}

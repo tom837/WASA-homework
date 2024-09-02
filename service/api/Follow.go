@@ -23,25 +23,23 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 }
 
 func (rt *_router) Follower_lst(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
-	rows,err := rt.db.GetFollowers("followers") //sql rows with all the users registered
-	var follower string
+	id := rt.UserHandler(w,r,ps)
+	rows,err := rt.db.Following(id) 
 	var following string
-	var data Follow
-	lst := []Follow{}  //list we will return with all the users
+	var data string
+	lst := []string{}  //list we will return with all the users
 	if err != nil {
 		// Handle error
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	defer rows.Close()
 	for rows.Next() { //loop through all the users
-		err = rows.Scan(&follower, &following)
+		err = rows.Scan(&following)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		data = Follow{  //create a json for the user
-			Follower: follower,
-			Following: following,
-		}
+		data =following
+		
 		lst = append(lst, data) //add the json to the final list
 	}
 	w.Header().Set("Content-Type", "text/plain")

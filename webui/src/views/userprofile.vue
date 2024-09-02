@@ -1,24 +1,37 @@
 <script>
-    import handleLike from "@/components/photo.vue"
     import photo from '@/components/photo.vue';
     import { profile,deletepic } from '@/services/feed.js';
-    import {like,unlike} from '@/services/like.js'
-    import { getuserid,getusername } from '@/services/auth-store';
-    import add from "@/components/add.vue"
+    import {like,unlike} from '@/services/like.js';
+    import follow from '../components/follow.vue';
+    import ban from '../components/ban.vue'
+    import { Unfollow,Follow,getfollowers } from '../services/followers.js';
+    import { getbanned,Ban,Unban } from '../services/banned.js';
     export default {
-      components: { photo, add},
+      components: { photo, follow,ban},
       data() {
         return {
-          photos: []
+          photos: [],
+          followerlist:[],
+          bannedlist:[],
+          name: '',
+          userid:''
         };
       },
       async mounted() {
         try {
-          this.userid=await getuserid();
-          let photos= await profile(this.userid); // feed() must return a promise
-          this.name=await getusername();
+          const userid = this.$route.params.id
+          const name = this.$route.params.username
+          this.name=name
+          this.userid=userid
+          let followerlist= await getfollowers();
+          let bannedlist=await getbanned();
+          this.bannedlist=bannedlist
+          console.log("ban:", this.bannedlist, this.userid)
+          this.followerlist = followerlist
+          let photos= await profile(userid);
           this.photos = photos;
         } catch (error) {
+            console.log(error)
           console.error('Error loading photos:', error);
         }
       },
@@ -72,10 +85,56 @@
                 console.error('Caught an error:'+error.message)
             }
         },
+        async handlefollow(content){
+          if (content.following){
+            try {
+              const resp = await Unfollow(this.userid);
+              console.log(resp);
+              this.errorMessage='';
+            } catch (error) {
+              this.errorMessage = error.message;
+              console.error('Caught an error: '+ error.message);
+            }
+          }else{
+            console.log("follow")
+            try {
+                
+              const resp = await Follow(this.userid);
+              console.log(resp);
+              this.errorMessage='';
+            } catch (error) {
+              this.errorMessage = error.message;
+              console.error('Caught an error: '+ error.message);
+            }
 
-        async changename(){
-            this.$router.push({ name: 'changename'})
-        }
+          }
+        },
+
+        async handleban(content){
+          if (content.baned){
+            try {
+              const resp = await Unban(this.userid);
+              console.log(resp);
+              this.errorMessage='';
+            } catch (error) {
+              this.errorMessage = error.message;
+              console.error('Caught an error: '+ error.message);
+            }
+          }else{
+            try {
+              const resp = await Ban(this.userid);
+              console.log(resp);
+              this.errorMessage='';
+            } catch (error) {
+              this.errorMessage = error.message;
+              console.error('Caught an error: '+ error.message);
+            }
+
+          }
+        },
+
+
+
     },
   };
 
@@ -88,13 +147,25 @@
     <div class="page-container">
         <div class="photos-container">
             <div class="header">
-                <h1>{{ name }}  <i class="bi bi-pen icon-button" @click="changename">change name</i>  </h1>
+                <h1>{{ name }} </h1>
                 <div class="add">
-                    <add/>
+                    <div v-if="followerlist.includes(userid)">
+                        <follow @follow="handlefollow" :Following="true"/>
+                    </div>
+                    <div v-else>
+                        <follow @follow="handlefollow" :Following="false"/>
+                    </div>
+                    <div v-if="bannedlist.includes(userid)">
+                        <ban @ban="handleban" :Banning="true"/>
+                    </div>
+                    <div v-else>
+                        <ban @ban="handleban" :Banning="false"/>
+                    </div>
+                    
                 </div>
             </div>
             <div v-if="photos==='No posts yet'">
-                <p class="position">Upload pictures so all your friends can see them</p>
+                <p class="position">This user has not uploaded any pictures</p>
             </div>
             <div v-else>
                 <photo
@@ -106,9 +177,8 @@
                     :likes ="getLikesCount(photo.Likes)"
                     :liked= "Liked(photo.Likes)"
                     :comments = "getLikesCount(photo.Comments)"
-                    :owned = "true"
+                    :owned = "false"
                     @like="HandleLikeEvent(photo.Id, $event.liked)"
-                    @delphoto="Deletephoto"
                 />
             </div>
         </div>

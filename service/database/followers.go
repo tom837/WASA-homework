@@ -51,6 +51,13 @@ func (db *appdbimpl) GetFollowers(table string)(*sql.Rows, error){
 }
 
 
+func (db *appdbimpl) Following(id string)(*sql.Rows, error){
+	query:="SELECT followed_id FROM followers WHERE follower_id =? "
+	row, err:=db.c.Query(query,id)
+	return row,err
+}
+
+
 func (db *appdbimpl) Unfollow(user string, fol string, table string)(error){
 	if user == fol {
 		return fmt.Errorf("Cannot unfollow yourself!")
