@@ -1,7 +1,8 @@
 # Create a first temporary image named "builder"
 FROM golang:1.19.1 AS builder
 # Copy Go code (in "builder")
-WORKDIR /src/ COPY . .
+WORKDIR /src/ 
+COPY . .
 # Build executables (in "builder")
 RUN go build -o /app/webapi ./cmd/webapi
 # Create final container

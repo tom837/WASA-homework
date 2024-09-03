@@ -1,12 +1,21 @@
 version: '3'
 
 
-services: backend: image:
-  docker.io/your_username/backend:latest ports:
-  -	"3000:3000" volumes:
-  -	./shared:/shared
+services: 
+  backend: 
+    image: 'tom/backend:latest'
+    build:
+      dockerfile: Dockerfile.backend.dockerfile
+      context: . 
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./shared:/shared
 
-
-frontend: image:
-  docker.io/your_username/frontend:latest ports:
-  - "8080:80"
+  frontend: 
+    image: 'tom/frontend:latest'
+    build:
+      dockerfile: Dockerfile.frontend.dockerfile
+      context: . 
+    ports:
+      - "8080:80"
