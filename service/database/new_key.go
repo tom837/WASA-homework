@@ -42,7 +42,14 @@ func generateNewKey(db *appdbimpl, prefix string, database string) (string, erro
 		lst = append(lst, num) //add the json to the final list
 	}
 	// Generate the new key
-	max:=slices.Max(lst)
+	var max int
+	if len(lst)>0{
+		max =slices.Max(lst)
+
+	}else{
+		max = 0
+	}
 	newKey := fmt.Sprintf("%s%d", prefix, max+1)
+
 	return newKey, nil
 }
