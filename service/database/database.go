@@ -44,12 +44,22 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	tabel_users := "CREATE TABLE IF NOT EXISTS users(id INT NOT NULL PRIMARY KEY,username TEXT NOT NULL);"
+	defaultuser1:="INSERT INTO users (id,username) SELECT 'u100','Fred' WHERE NOT EXISTS (SELECT 1 FROM users WHERE id='u100');"
+	defaultuser2:="INSERT INTO users (id,username) SELECT 'u101','Amy' WHERE NOT EXISTS (SELECT 1 FROM users WHERE id='u101');"
 	Follower_table := "CREATE TABLE IF NOT EXISTS followers(follower_id INT NOT NULL, followed_id INT NOT NULL, PRIMARY KEY (follower_id, followed_id), FOREIGN KEY (follower_id) REFERENCES users(id), FOREIGN KEY (followed_id) REFERENCES users(id));"
 	Banned_table :="CREATE TABLE IF NOT EXISTS baned(follower_id INT NOT NULL, followed_id INT NOT NULL, PRIMARY KEY (follower_id, followed_id), FOREIGN KEY (follower_id) REFERENCES users(id), FOREIGN KEY (followed_id) REFERENCES users(id));"
 	Photo_table := "CREATE tABLE IF NOT EXISTS photos(id INT NOT NULL PRIMARY KEY,user_id INT NOT NULL, photo BYTEA NOT NULL, uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id));"
 	Like_table :="CREATE TABLE IF NOT EXISTS likes(user_id INT NOT NULL, photo_id INT NOT NULL, PRIMARY KEY (user_id, photo_id), FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (photo_id) REFERENCES photos(id));"
 	Comment_table := "CREATE tABLE IF NOT EXISTS comments(id INT NOT NULL PRIMARY KEY,user_id INT NOT NULL,photo_id INT NOT NULL, comment TEXT NOT NULL , FOREIGN KEY (user_id) REFERENCES users(id),FOREIGN KEY (photo_id) REFERENCES photos(id));"
 	_, err := db.Exec(tabel_users)
+	if err != nil {
+		return nil, err
+	}
+	_, err = db.Exec(defaultuser1)
+	if err != nil {
+		return nil, err
+	}
+	_, err = db.Exec(defaultuser2)
 	if err != nil {
 		return nil, err
 	}
