@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"regexp"
-	"slices"
+	"golang.org/x/exp/slices"
 	"strconv"
 )
 
