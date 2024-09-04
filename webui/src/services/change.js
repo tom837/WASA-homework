@@ -1,12 +1,12 @@
 import { getuserid, saveuserid } from './auth-store';
-import axios from './axios';
+import api from './axios';
 
 
 
 export async function changeusername(username){
     let id = await getuserid();
     try{
-        let response = await axios.put(`/user`, {
+        let response = await api.put(`/user`, {
             name:username.name,
             },{headers :{
                 "Authorization" : id

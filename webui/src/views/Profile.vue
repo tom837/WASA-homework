@@ -1,5 +1,4 @@
 <script>
-    import handleLike from "@/components/photo.vue"
     import photo from '@/components/photo.vue';
     import { profile,deletepic } from '@/services/feed.js';
     import {like,unlike} from '@/services/like.js'

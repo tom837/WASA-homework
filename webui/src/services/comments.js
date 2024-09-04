@@ -1,10 +1,10 @@
 import { getuserid } from './auth-store';
-import axios from './axios';
+import api from './axios';
 
 
 export async function getcomments(photoid){
     try{
-        let response = await axios.get(`/photos/comments/${photoid}`);
+        let response = await api.get(`/photos/comments/${photoid}`);
         console.log('Response:', response);
         return response.data;
     }catch (e){
@@ -15,7 +15,7 @@ export async function getcomments(photoid){
 
 export async function addcomment(user,photoid,content){
     try{
-        let response = await axios.post(`/photos/${photoid}/comments`, {
+        let response = await api.post(`/photos/${photoid}/comments`, {
             Comment:content,
             },{headers :{
                 "Authorization" : user
@@ -29,7 +29,7 @@ export async function addcomment(user,photoid,content){
 
 export async function removecomment(user,commentid){
     try{
-        let response=await axios.delete(`/photos/${commentid}/comments`,{
+        let response=await api.delete(`/photos/${commentid}/comments`,{
             headers :{
                 "Authorization" : user
             }});

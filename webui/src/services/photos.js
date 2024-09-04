@@ -1,11 +1,11 @@
 import { getuserid } from './auth-store';
-import axios from './axios';
+import api from './axios';
 
 
 export async function uploadphoto(photocontent){
     let id = await getuserid();
     try{
-        let response = await axios.post(`/photos`, {
+        let response = await api.post(`/photos`, {
             photo:photocontent,
             },{headers :{
                 "Authorization" : id

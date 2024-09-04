@@ -5,8 +5,8 @@ info:
 
 servers:
   - url: http://localhost:3000
-  
-tags: 
+
+tags:
   - name: login
     description: login/signup
   - name: profile
@@ -15,7 +15,7 @@ tags:
     description: anything that shows your reaction to a post (comment, like)
   - name: userInteraction
     description: anything that allows user to interact directl with each other (follow, ban)
-    
+
 paths:
   /login:
     post:
@@ -40,7 +40,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/user'
-                    
+
   /user:
     get:
       summary: get your stream
@@ -61,7 +61,7 @@ paths:
             appliccation/json:
               schema:
                 $ref: '#/components/schemas/error'
-    put: 
+    put:
       summary: change your username
       description: |
         You can change your userame. It has to have a minimum of 3 letters and a maximum of 16
@@ -90,10 +90,10 @@ paths:
             appliccation/json:
               schema:
                 $ref: '#/components/schemas/error'
-    
+
   /user/{userid}:
     parameters:
-      - $ref: '#/components/parameters/users' 
+      - $ref: '#/components/parameters/users'
     get:
       summary: get user profile
       description: |
@@ -114,9 +114,7 @@ paths:
             appliccation/json:
               schema:
                 $ref: '#/components/schemas/error'
-                
-    
-  
+
   /user/{userid}/followers/:
     parameters:
       - $ref: '#/components/parameters/users'
@@ -127,7 +125,7 @@ paths:
       tags: [userInteraction]
       operationId: FollowUser
       responses:
-        '201': 
+        '201':
           description: 'user successfully followed'
           content:
             application/json:
@@ -146,7 +144,7 @@ paths:
       tags: [userInteraction]
       operationId: unfollowUser
       responses:
-        '200': 
+        '200':
           description: user unfollowed successfully
           content:
             application/json:
@@ -170,7 +168,7 @@ paths:
       tags: [userInteraction]
       operationId: banUser
       responses:
-        '201': 
+        '201':
           description: user baned successfully
           content:
             application/json:
@@ -190,7 +188,7 @@ paths:
       tags: [userInteraction]
       operationId: unbanUser
       responses:
-        '200': 
+        '200':
           description: user unbaned successfully
           content:
             application/json:
@@ -205,7 +203,7 @@ paths:
   /photos:
     post:
       summary: post a new photo
-      description: | 
+      description: |
         post a new photo where peope will be able to see that photo,
         like and comment on that photo.
       tags: [profile]
@@ -215,7 +213,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/photo'
-        required: true 
+        required: true
       responses:
         '201':
           description: photo posted successfully
@@ -224,18 +222,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/photo'
 
-  /photos/{photoId}:  
+  /photos/{photoId}:
     parameters:
         - $ref: '#/components/parameters/photo'
     delete:
       summary: delete a photo
-      description: | 
-        delete a photo from the website. deleting a photo deletes also 
+      description: |
+        delete a photo from the website. deleting a photo deletes also
         all it's likes and comments.
       tags: [profile]
       operationId: deletePhoto
       responses:
-        '200': 
+        '200':
           description: 'photo deleted successfully'
           content:
             application/json:
@@ -247,7 +245,7 @@ paths:
             appliccation/json:
               schema:
                 $ref: '#/components/schemas/error'
-  
+
   /photos/{photoId}/likes/:
     parameters:
       - $ref: '#/components/parameters/photo'
@@ -298,7 +296,7 @@ paths:
   /photos/{photoId}/comments/:
     parameters:
       - $ref: '#/components/parameters/photo'
-    post: 
+    post:
       summary: post a comment under a photo
       description: |
         people can comment on photos and they will be visible to everyone.
@@ -323,15 +321,15 @@ paths:
             appliccation/json:
               schema:
                 $ref: '#/components/schemas/error'
-          
+
     delete:
       summary: delete a comment
-      description: | 
+      description: |
         delete a photo from a post. it will no longer be visible to anyone
       tags: [react]
       operationId: uncommentPhoto
       responses:
-        '200': 
+        '200':
           description: 'comment deleted successfully'
           content:
             application/json:
@@ -349,13 +347,13 @@ components:
     user:
       type: object
       properties:
-        username: 
+        username:
           type: string
           pattern: '^.*?$'
           minLength: 3
           maxLength: 16
           description: this is the public username everyone will be able to see
-        id: 
+        id:
           type: integer
           pattern: '^u[0-9]+$'
           example: "u101"
@@ -365,10 +363,10 @@ components:
       type: object
       properties:
         file:
-          type: string  
-          format: binary  
+          type: string
+          format: binary
           description: this is the photo itself
-        id: 
+        id:
           type: string
           pattern: '^p[0-9]+$'
           example: p101
@@ -376,14 +374,14 @@ components:
         user:
           $ref: '#/components/schemas/user/properties/id'
           description: every photo is associated to the user that posted it
-  
+
     comments:
       type: object
       properties:
         body:
           type: string
           description: what the comment will say
-        id: 
+        id:
           type: string
           pattern: '^c[0-9]+$'
           example: c101
@@ -400,19 +398,19 @@ components:
         message:
           type: string
           description: the message associated to the error
-        path: 
+        path:
           type: string
           description: the path where the error accured
-      
+
   parameters:
     users:
-      name: userid 
+      name: userid
       in: path
       required: true
       schema:
         type: object
         properties:
-          id: 
+          id:
             $ref: '#/components/schemas/user/properties/id'
     photo:
       name: photoId
@@ -421,7 +419,7 @@ components:
       schema:
         type: object
         properties:
-          id: 
+          id:
             $ref: '#/components/schemas/photo/properties/id'
 
     comment:
@@ -431,20 +429,20 @@ components:
       schema:
         type: object
         properties:
-          id: 
+          id:
             $ref: '#/components/schemas/comments/properties/id'
 
-                
-                
+
+
   securitySchemes:
-    bearerAuth:            
+    bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT    
+      bearerFormat: JWT
 
 security:
   - bearerAuth: []
 
 
-      
+
 

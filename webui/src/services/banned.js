@@ -1,11 +1,11 @@
 import { getuserid } from './auth-store';
-import axios from './axios';
+import api from './axios';
 
 
 
 export async function getbanned(id){
     try{
-        let response = await axios.get(`/ban`,{
+        let response = await api.get(`/ban`,{
             headers:{
                 "Authorization": id
             }
@@ -21,7 +21,7 @@ export async function getbanned(id){
 export async function Ban(user){
     let id = await getuserid();
     try{
-        let response = await axios.post(`/user/${user}/ban`, {},
+        let response = await api.post(`/user/${user}/ban`, {},
             {headers :{
                 "Authorization" : id
             }});
@@ -35,7 +35,7 @@ export async function Ban(user){
 export async function Unban(user){
     let id = await getuserid();
     try{
-        let response = await axios.delete(`/user/${user}/ban`,
+        let response = await api.delete(`/user/${user}/ban`,
             {headers :{
                 "Authorization" : id
             }});

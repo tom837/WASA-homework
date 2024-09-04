@@ -1,10 +1,10 @@
 import { getuserid } from './auth-store';
-import axios from './axios';
+import api from './axios';
 
 export async function like(photoid){
     try{
         let id = await getuserid();
-        let response = await axios.post(`/photos/${photoid}/likes`,{},{
+        let response = await api.post(`/photos/${photoid}/likes`,{},{
             headers :{
                 "Authorization" : id
             }
@@ -20,7 +20,7 @@ export async function like(photoid){
 export async function unlike(photoid){
     try{
         let id = await getuserid();
-        let response = await axios.delete(`/photos/${photoid}/likes`,{
+        let response = await api.delete(`/photos/${photoid}/likes`,{
             headers :{
                 "Authorization" : id
             }

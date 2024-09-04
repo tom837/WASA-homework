@@ -1,6 +1,4 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import { getuserid } from './services/auth-store';
 </script>
 <script>
 export default {}
@@ -24,7 +22,7 @@ export default {}
 						<li class="nav-item">
 							<RouterLink to="/user/profile" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
-								Profile 
+								Profile
 							</RouterLink>
 						</li>
 						<li class="nav-item">

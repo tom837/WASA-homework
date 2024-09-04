@@ -1,10 +1,10 @@
 import { getuserid } from './auth-store';
-import axios from './axios';
+import api from './axios';
 
 export async function feed(){
     try{
         let id = await getuserid();
-        let response = await axios.get("/user",{
+        let response = await api.get("/user",{
             headers :{
                 "Authorization" : id
             }
@@ -20,7 +20,7 @@ export async function feed(){
 
 export async function profile(id){
     try{
-        let response = await axios.get(`/user/${id}`,{
+        let response = await api.get(`/user/${id}`,{
             headers:{
                 "Authorization": id
             }
@@ -36,7 +36,7 @@ export async function profile(id){
 export async function deletepic(photoid){
     let id = await getuserid();
     try{
-        let response = await axios.delete(`/photos/${photoid}`,{
+        let response = await api.delete(`/photos/${photoid}`,{
             headers:{
                 "Authorization":id
             }
@@ -51,7 +51,7 @@ export async function deletepic(photoid){
 
 export async function getuserlist(){
     try{
-        let response = await axios.get('/users')
+        let response = await api.get('/users')
         console.log('response:', response)
         return response.data
     }catch(e){

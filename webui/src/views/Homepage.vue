@@ -1,12 +1,10 @@
 <script>
-    import handleLike from "@/components/photo.vue"
     import photo from '@/components/photo.vue';
     import { feed } from '@/services/feed.js';
     import {like,unlike} from '@/services/like.js'
     import { getuserid } from '@/services/auth-store';
-    import showcomments from "@/components/photo.vue"
     export default {
-      components: { photo, handleLike, showcomments},
+      components: { photo},
       data() {
         return {
           photos: []
