@@ -7,7 +7,7 @@
       <button v-if="imageFile" @click="uploadImage">Upload Image</button>
     </div>
   </template>
-  
+
 <script>
   import {uploadphoto} from '@/services/photos.js';
   export default {
@@ -40,7 +40,6 @@
 
 
       async uploadImage() {
-        console.log("test")
         try{
             let response = await uploadphoto(this.imageBase64)
 			console.log('comment added successfully', response);
@@ -57,19 +56,19 @@
     }
   };
   </script>
-  
+
   <style scoped>
   .image-upload {
     margin: 20px;
   }
-  
+
   .image-preview img {
     max-width: 100%;
     max-height: 300px;
     margin-top: 10px;
     border: 1px solid #ddd;
   }
-  
+
   button {
     margin-top: 10px;
     padding: 10px 20px;
@@ -79,9 +78,8 @@
     border-radius: 4px;
     cursor: pointer;
   }
-  
+
   button:hover {
     background-color: #0056b3;
   }
   </style>
-  

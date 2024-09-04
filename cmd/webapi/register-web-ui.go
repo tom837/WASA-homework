@@ -10,7 +10,6 @@ import (
 )
 
 func registerWebUI(hdl http.Handler) (http.Handler, error) {
-	fmt.Println("testr2")
 	distDirectory, err := fs.Sub(webui.Dist, "dist")
 	if err != nil {
 		return nil, fmt.Errorf("error embedding WebUI dist/ directory: %w", err)

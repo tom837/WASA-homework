@@ -17,6 +17,11 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	err = rt.db.Unfollow(followed_id, follower_id, "followers")
+	if err !=nil{
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	fmt.Fprintf(w, "Baned successfuly!")
 
@@ -57,7 +62,7 @@ func (rt *_router) Remove_ban(w http.ResponseWriter, r *http.Request, ps httprou
 	err := rt.db.Unfollow(follower_id, followed_id,"baned")
 	if err!=nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return 
+		return
 	}
 	fmt.Fprintf(w, "Unbaned successfuly!")
 }

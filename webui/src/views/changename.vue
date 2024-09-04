@@ -10,7 +10,6 @@
 	},
 	methods: {
 		async changeuser_name(credentials) {
-            console.log("it is running")
 			this.errorMessage="";
 			try {
 				const user = await changeusername(credentials);

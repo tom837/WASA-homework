@@ -123,8 +123,8 @@
 .photo{
     padding: 10px;
     text-align: center;
-    max-width: 100%;
-    height: auto;
+    max-width: 90%;
+    max-height: 90%;
     border-radius: 8px;
 }
 

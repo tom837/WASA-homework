@@ -20,7 +20,7 @@ func (db *appdbimpl) Follow(user string, foll string,table string) (error){
 		}else{
 			return err
 		}
-		
+
 	}
 	query2:=fmt.Sprintf("SELECT follower_id FROM %s WHERE follower_id=? AND followed_id=?", table)
 	var Id string
@@ -35,11 +35,11 @@ func (db *appdbimpl) Follow(user string, foll string,table string) (error){
 		}
 	} else if Id!="" {
 		return fmt.Errorf("Already following!")
-	
+
 	} else {
 		return err
 	}
-	
+
 }
 
 
@@ -47,7 +47,7 @@ func (db *appdbimpl) GetFollowers(table string)(*sql.Rows, error){
 	query := fmt.Sprintf("SELECT * FROM %s;",table)
 	row, err:= db.c.Query(query) // get all users in the database
 	return row,err
-	
+
 }
 
 
@@ -67,15 +67,14 @@ func (db *appdbimpl) Unfollow(user string, fol string, table string)(error){
 	err := db.c.QueryRow(query, user, fol).Scan(&Id)
 	if err!=nil{
 		if errors.Is(err, sql.ErrNoRows){
-			return fmt.Errorf("You cannot unfollow someone you are not following!")
 		}else{
 			return err
 		}
-		
+
 	}
 
 	query2 := fmt.Sprintf("DELETE FROM %s WHERE follower_id=? AND followed_id=?", table)
 	_, err = db.c.Exec(query2, user, fol)
 	return err
-	
+
 }

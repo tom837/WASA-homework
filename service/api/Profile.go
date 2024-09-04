@@ -146,10 +146,10 @@ func (rt *_router) Stream(w http.ResponseWriter, r *http.Request, ps httprouter.
 			if err := json.Unmarshal(tmp, &array2); err != nil {
 				log.Fatal(err)
 			}
-		
+
 			// Combine the slices
 			combinedjsons := append(array1, array2...)
-		
+
 			// Marshal the combined slice back into JSON
 			other, err = json.Marshal(combinedjsons)
 			if err != nil {
@@ -178,7 +178,7 @@ func (rt *_router) Stream(w http.ResponseWriter, r *http.Request, ps httprouter.
 
 		fmt.Fprintf(w,string(sortedJSON))
 	}
-	
-	
+
+
 
 }

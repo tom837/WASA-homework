@@ -3,8 +3,7 @@ import axios from './axios';
 
 
 
-export async function getbanned(){
-    let id = await getuserid();
+export async function getbanned(id){
     try{
         let response = await axios.get(`/ban`,{
             headers:{

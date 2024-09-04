@@ -5,7 +5,7 @@
 	components: { submitLogin },
 	data() {
 		return {
-		errorMessage: ''
+		errorMessage: '',
 		};
 	},
 	methods: {

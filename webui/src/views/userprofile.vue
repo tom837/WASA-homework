@@ -6,6 +6,7 @@
     import ban from '../components/ban.vue'
     import { Unfollow,Follow,getfollowers } from '../services/followers.js';
     import { getbanned,Ban,Unban } from '../services/banned.js';
+	import { getuserid } from '../services/auth-store.js';
     export default {
       components: { photo, follow,ban},
       data() {
@@ -13,6 +14,8 @@
           photos: [],
           followerlist:[],
           bannedlist:[],
+		  isbanned:[],
+		  me:'',
           name: '',
           userid:''
         };
@@ -21,17 +24,19 @@
         try {
           const userid = this.$route.params.id
           const name = this.$route.params.username
+		  const me = await getuserid()
+		  this.me=me
           this.name=name
           this.userid=userid
           let followerlist= await getfollowers();
-          let bannedlist=await getbanned();
+          let bannedlist=await getbanned(this.me);
           this.bannedlist=bannedlist
-          console.log("ban:", this.bannedlist, this.userid)
+		  let isbanned = await getbanned(this.userid)
+		  this.isbanned=isbanned
           this.followerlist = followerlist
           let photos= await profile(userid);
           this.photos = photos;
         } catch (error) {
-            console.log(error)
           console.error('Error loading photos:', error);
         }
       },
@@ -96,9 +101,8 @@
               console.error('Caught an error: '+ error.message);
             }
           }else{
-            console.log("follow")
             try {
-                
+
               const resp = await Follow(this.userid);
               console.log(resp);
               this.errorMessage='';
@@ -146,8 +150,24 @@
 <template>
     <div class="page-container">
         <div class="photos-container">
+			<div v-if="isbanned.includes(me)">
+					<p class = "position">This user banned you</p>
+					<div class="header">
+						<h1>{{ name }} </h1>
+						<div class="add">
+							<div v-if="bannedlist.includes(userid)">
+								<ban @ban="handleban" :Banning="true"/>
+							</div>
+							<div v-else>
+								<ban @ban="handleban" :Banning="false"/>
+							</div>
+					</div>
+				</div>
+			</div>
+			<div v-else>
             <div class="header">
                 <h1>{{ name }} </h1>
+
                 <div class="add">
                     <div v-if="followerlist.includes(userid)">
                         <follow @follow="handlefollow" :Following="true"/>
@@ -161,7 +181,7 @@
                     <div v-else>
                         <ban @ban="handleban" :Banning="false"/>
                     </div>
-                    
+
                 </div>
             </div>
             <div v-if="photos==='No posts yet'">
@@ -182,6 +202,7 @@
                 />
             </div>
         </div>
+	</div>
     </div>
 </template>
 

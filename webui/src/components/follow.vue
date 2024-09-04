@@ -12,7 +12,6 @@
 
     export default{
         data() {
-            console.log("out",this.Following)
             return {
                 isfollowing: this.Following,
             };

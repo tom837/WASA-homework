@@ -28,12 +28,12 @@
         data(){
             return {
                 UserName: '',
-                errorMessage: ''
+                errorMessage: '',
+				name:''
             };
         },
         methods: {
             submitLogin() {
-                //console.log('Button pressed!');
                 this.$emit('login', { name: this.name});
                 this.errorMessage = '';
             }

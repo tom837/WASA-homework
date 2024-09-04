@@ -36,7 +36,6 @@ type WebAPIConfiguration struct {
 // So, CLI parameters will override the environment, and configuration file will override everything.
 // Note that the configuration file can be specified only via CLI or environment variable.
 func loadConfiguration() (WebAPIConfiguration, error) {
-	fmt.Println("testl")
 	var cfg WebAPIConfiguration
 
 	// Try to load configuration from environment variables and command line switches
@@ -67,6 +66,5 @@ func loadConfiguration() (WebAPIConfiguration, error) {
 		}
 		_ = fp.Close()
 	}
-	fmt.Println("test2")
 	return cfg, nil
 }

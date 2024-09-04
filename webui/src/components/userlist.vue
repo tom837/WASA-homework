@@ -24,7 +24,6 @@
         },
         methods: {
             userprofile(){
-                console.log(this.username)
                 this.$router.push({name:"userprofile", params: { id: this.id, username: this.username }})
             }
         },

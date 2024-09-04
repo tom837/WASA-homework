@@ -9,7 +9,8 @@
       components: { photo, add},
       data() {
         return {
-          photos: []
+          photos: [],
+		  name:''
         };
       },
       async mounted() {

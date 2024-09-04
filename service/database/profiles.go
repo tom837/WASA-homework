@@ -48,5 +48,5 @@ func (db *appdbimpl) GetStream(user string)(*sql.Rows, error){
 	query = "SELECT followed_id FROM followers WHERE follower_id=?"
 	row, err= db.c.Query(query, user) // get all photos in the database
 	return row,err
-	
+
 }

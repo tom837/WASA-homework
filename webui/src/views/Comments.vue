@@ -20,7 +20,6 @@
             this.username= await getusername();
             this.userid=await getuserid();
             this.comments = comments;
-            console.log("comments",this.comments)
         } catch (error) {
           console.error('Error loading photos:', error);
         }

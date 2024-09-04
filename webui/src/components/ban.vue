@@ -12,7 +12,6 @@
 
     export default{
         data() {
-            console.log("wtf",this.Banning)
             return {
                 isbanned: this.Banning,
             };
