@@ -4,9 +4,22 @@ import (
 	"database/sql"
 	"fmt"
 	"regexp"
-	"golang.org/x/exp/slices"
 	"strconv"
 )
+
+func MaxIntSlice(slice []int) int {
+    if len(slice) == 0 {
+        return 0 // or some default value depending on your case
+    }
+    max := slice[0]
+    for _, value := range slice {
+        if value > max {
+            max = value
+        }
+    }
+    return max
+}
+
 
 func generateNewKey(db *appdbimpl, prefix string, database string) (string, error) {
 	// Query to find the highest key
@@ -44,7 +57,7 @@ func generateNewKey(db *appdbimpl, prefix string, database string) (string, erro
 	// Generate the new key
 	var max int
 	if len(lst)>0{
-		max =slices.Max(lst)
+		max =MaxIntSlice(lst)
 
 	}else{
 		max = 0
