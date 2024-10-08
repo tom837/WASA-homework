@@ -11,7 +11,7 @@ func (db *appdbimpl) LikePhoto(user string, photo string) error {
 	err := db.c.QueryRow(query, photo).Scan(new(int))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("Photo not found")
+			return fmt.Errorf("photo not found")
 		} else {
 			return err
 		}
@@ -27,7 +27,7 @@ func (db *appdbimpl) LikePhoto(user string, photo string) error {
 			return err
 		}
 	} else {
-		return fmt.Errorf("You cannot like a photo twice!")
+		return fmt.Errorf("you cannot like a photo twice")
 	}
 
 }
@@ -44,7 +44,7 @@ func (db *appdbimpl) Unlike(user string, photo string) error {
 	err := db.c.QueryRow(query, photo).Scan(new(int))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("Photo not found!")
+			return fmt.Errorf("photo not found")
 		} else {
 			return err
 		}
@@ -54,7 +54,7 @@ func (db *appdbimpl) Unlike(user string, photo string) error {
 	err = db.c.QueryRow(query, photo, user).Scan(new(int))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("Cannot unlike a photo you haven't liked!")
+			return fmt.Errorf("cannot unlike a photo you haven't liked")
 		} else {
 			return err
 		}

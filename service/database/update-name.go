@@ -18,7 +18,7 @@ func (db *appdbimpl) UpdateName(name string, id string) error {
 			return err
 		}
 	} else {
-		return fmt.Errorf("Username already being used by a user")
+		return fmt.Errorf("username already being used by a user")
 	}
 
 }

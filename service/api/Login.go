@@ -23,7 +23,7 @@ func (rt *_router) Login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 	}
 	defer r.Body.Close()
 	if rt.AssertNameCorrect(user.UserName) {
-		err = fmt.Errorf("Username has to be between 3 and 16 characters long")
+		err = fmt.Errorf("username has to be between 3 and 16 characters long")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

@@ -28,7 +28,7 @@ func (rt *_router) UploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 }
 
 func (rt *_router) Photo_lst(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	rows, err := rt.db.GetPhotos() //sql rows with all the users registered
+	rows, err := rt.db.GetPhotos() // sql rows with all the users registered
 	if err != nil {
 		// Handle error
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -51,7 +51,7 @@ func (rt *_router) Photo_lst(w http.ResponseWriter, r *http.Request, ps httprout
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		data = Photo{ // create a json for the user
-			Id:   id,
+			ID:   id,
 			User: user,
 			Time: time,
 		}

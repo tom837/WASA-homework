@@ -33,6 +33,10 @@ func generateNewKey(db *appdbimpl, prefix string, database string) (string, erro
 		// Handle other errors
 		return "", err
 	}
+	if rows.Err() != nil {
+		rows.Close()
+		return "",rows.Err()
+	}
 	lst := []int{}
 	var id string
 	for rows.Next() { // loop through all the users

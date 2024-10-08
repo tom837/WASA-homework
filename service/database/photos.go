@@ -29,13 +29,13 @@ func (db *appdbimpl) Remove_photo(id string, user_id string) error {
 	err := db.c.QueryRow(query, id).Scan(&user)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("Photo not found")
+			return fmt.Errorf("photo not found")
 		} else {
 			return err
 		}
 	}
 	if user != user_id {
-		return fmt.Errorf("You cannot delete another users photo!")
+		return fmt.Errorf("you cannot delete another users photo")
 	}
 	query = "DELETE FROM photos WHERE id=?"
 	_, err = db.c.Exec(query, id)

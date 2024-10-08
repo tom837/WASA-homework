@@ -1,6 +1,6 @@
 package database
 
-//doLogin as defined in api
+// doLogin as defined in api
 import "database/sql"
 
 func (db *appdbimpl) Getusers() (*sql.Rows, error) {

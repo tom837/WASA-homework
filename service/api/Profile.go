@@ -13,6 +13,18 @@ import (
 func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, user string) []byte {
 	var name string
 	rows, name, err := rt.db.GetProfile(user) // sql rows with all the users registered
+	if err != nil {
+		var nothing []byte
+		// Handle error
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return nothing
+	}
+	if rows.Err() != nil {
+		var nothing []byte
+		rows.Close()
+		http.Error(w, rows.Err().Error(), http.StatusInternalServerError)
+		return nothing
+	}
 	var comment sql.NullString
 	var id string
 	var photo []byte
@@ -20,12 +32,6 @@ func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httpro
 	var time time.Time
 	var data Post
 	lst := []Post{} // list we will return with all the users
-	if err != nil {
-		var nothing []byte
-		// Handle error
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return nothing
-	}
 	defer rows.Close()
 	for rows.Next() { // loop through all the users
 		err = rows.Scan(&photo, &id, &like, &comment, &time)
@@ -36,7 +42,7 @@ func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httpro
 		}
 		data = Post{ // create a json for the user
 			User:     name,
-			Id:       id,
+			ID:       id,
 			Photo:    photo,
 			Likes:    like.String,
 			Comments: comment.String,
@@ -48,11 +54,11 @@ func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httpro
 	aggregated := make(map[string]*AggregatedData)
 
 	for _, entry := range lst {
-		key := entry.User + "-" + entry.Id
+		key := entry.User + "-" + entry.ID
 		if _, exists := aggregated[key]; !exists {
 			aggregated[key] = &AggregatedData{
 				User:     entry.User,
-				Id:       entry.Id,
+				ID:       entry.ID,
 				Photo:    entry.Photo,
 				Likes:    []string{},
 				Comments: []string{},
@@ -112,6 +118,11 @@ func (rt *_router) Stream(w http.ResponseWriter, r *http.Request, ps httprouter.
 	rows, err := rt.db.GetStream(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if rows.Err() != nil {
+		rows.Close()
+		http.Error(w, rows.Err().Error(), http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()

@@ -11,12 +11,15 @@ func (db *appdbimpl) AddComment(user string, photo string, comment string) (stri
 	err := db.c.QueryRow(query, photo).Scan(new(int))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return "", fmt.Errorf("Photo not found")
+			return "", fmt.Errorf("photo not found")
 		} else {
 			return "", err
 		}
 	}
 	newKey, err := generateNewKey(db, "c", "comments")
+	if err != nil {
+		return "", err
+	}
 	query = `INSERT INTO comments (id,user_id, photo_id,comment) VALUES (?, ?, ?, ?);`
 	_, err = db.c.Exec(query, newKey, user, photo, comment)
 	return newKey, err
@@ -34,13 +37,13 @@ func (db *appdbimpl) Remove_comment(id string, user_id string) error {
 	err := db.c.QueryRow(query, id).Scan(&user)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("Comment not found")
+			return fmt.Errorf("comment not found")
 		} else {
 			return err
 		}
 	}
 	if user != user_id {
-		return fmt.Errorf("You cannot delete another users comment!")
+		return fmt.Errorf("you cannot delete another users comment")
 	}
 	query = "DELETE FROM comments WHERE id=?"
 	_, err = db.c.Exec(query, id)

@@ -8,13 +8,13 @@ import (
 
 func (db *appdbimpl) Follow(user string, foll string, table string) error {
 	if user == foll {
-		return fmt.Errorf("Cannot follow yourself!")
+		return fmt.Errorf("cannot follow yourself")
 	}
 	query := "SELECT 1 FROM users WHERE id = ?;"
 	err := db.c.QueryRow(query, foll).Scan(new(int)) // makes sure the id provided exists
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("User not found!")
+			return fmt.Errorf("user not found")
 		} else {
 			return err
 		}
@@ -32,7 +32,7 @@ func (db *appdbimpl) Follow(user string, foll string, table string) error {
 			return err
 		}
 	} else if Id != "" {
-		return fmt.Errorf("Already following!")
+		return fmt.Errorf("already following")
 
 	} else {
 		return err
@@ -55,13 +55,13 @@ func (db *appdbimpl) Following(id string) (*sql.Rows, error) {
 
 func (db *appdbimpl) Unfollow(user string, fol string, table string) error {
 	if user == fol {
-		return fmt.Errorf("Cannot unfollow yourself!")
+		return fmt.Errorf("cannot unfollow yourself")
 	}
 	query := fmt.Sprintf("SELECT 1 FROM %s WHERE follower_id=? AND followed_id=?", table)
 	err := db.c.QueryRow(query, user, fol).Scan(new(int))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("You cannot unfollow someone you are not following!")
+			return fmt.Errorf("you cannot unfollow someone you are not following")
 		} else {
 			return err
 		}

@@ -23,11 +23,15 @@ func (rt *_router) Comment(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 	data := Comment{
-		Id:      id,
+		ID:      id,
 		Userid:  user,
 		Comment: comment.Comment}
 	w.Header().Set("Content-Type", "encoding/json")
 	err = json.NewEncoder(w).Encode(data)
+	if err != nil {
+		// Handle error
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func (rt *_router) Comment_lst(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -59,7 +63,7 @@ func (rt *_router) Comment_lst(w http.ResponseWriter, r *http.Request, ps httpro
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		data = Comment{ // create a json for the user
-			Id:      id,
+			ID:      id,
 			Userid:  user,
 			User:    username,
 			Comment: comment,

@@ -45,7 +45,7 @@ func (rt *_router) Baned_lst(w http.ResponseWriter, r *http.Request, ps httprout
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		lst = append(lst, following) //add the json to the final list
+		lst = append(lst, following) // add the json to the final list
 	}
 	w.Header().Set("Content-Type", "text/plain")
 	err = json.NewEncoder(w).Encode(lst) // send the list of users

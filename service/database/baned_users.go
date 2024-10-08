@@ -8,13 +8,13 @@ import (
 
 func (db *appdbimpl) Ban(user string, foll string) error {
 	if user == foll {
-		return fmt.Errorf("Cannot ban yourself!")
+		return fmt.Errorf("cannot ban yourself")
 	}
 	query := "SELECT 1 FROM users WHERE id = ?;"
 	err := db.c.QueryRow(query, foll).Scan(new(int)) // makes sure the id provided exists
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("User not found!")
+			return fmt.Errorf("user not found")
 		} else {
 			return err
 		}
@@ -33,7 +33,7 @@ func (db *appdbimpl) Ban(user string, foll string) error {
 			return err
 		}
 	} else if Id != "" {
-		return fmt.Errorf("Already banned!")
+		return fmt.Errorf("already banned")
 
 	} else {
 		return err
@@ -49,13 +49,13 @@ func (db *appdbimpl) GetBanned(id string) (*sql.Rows, error) {
 
 func (db *appdbimpl) Unban(user string, fol string) error {
 	if user == fol {
-		return fmt.Errorf("Cannot unban yourself!")
+		return fmt.Errorf("cannot unban yourself")
 	}
 	query := "SELECT 1 FROM followers WHERE follower_id=? AND followed_id=?"
 	err := db.c.QueryRow(query, user, fol).Scan(new(int))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("You cannot unban someone you did not ban!")
+			return fmt.Errorf("you cannot unban someone you did not ban")
 		} else {
 			return err
 		}
