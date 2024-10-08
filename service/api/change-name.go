@@ -35,7 +35,6 @@ func (rt *_router) SetMyUserName(w http.ResponseWriter, r *http.Request, ps http
 		err = fmt.Errorf("id missmatch")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
-		return
 	}
 	data := User{
 		UserName: user.UserName,
