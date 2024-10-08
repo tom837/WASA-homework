@@ -2,11 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"net/http"
-	"github.com/julienschmidt/httprouter"
 	"fmt"
+	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
-
 
 func (rt *_router) SetMyUserName(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var user User
@@ -16,23 +15,27 @@ func (rt *_router) SetMyUserName(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 	defer r.Body.Close()
-	if rt.AssertNameCorrect(user.UserName){
-		fmt.Fprintf(w,"Username hase to be between 3 and 16 characters long")
+	if rt.AssertNameCorrect(user.UserName) {
+		err = fmt.Errorf("Username has to be between 3 and 16 characters long")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	userID :=rt.UserHandler(w,r,ps)
+	userID := rt.UserHandler(w, r, ps)
 	err = rt.db.UpdateName(user.UserName, userID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-
 	id, err := rt.db.DoLogin(user.UserName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	if id!= userID{
-		w.Header().Set("content-type", "text/plain")
-		_, _ = w.Write([]byte("id missmatch"))
+	if id != userID {
+		err = fmt.Errorf("id missmatch")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+		return
 	}
 	data := User{
 		UserName: user.UserName,
@@ -43,10 +46,6 @@ func (rt *_router) SetMyUserName(w http.ResponseWriter, r *http.Request, ps http
 	if err != nil {
 		// Handle error
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	
-
-
-
-
 }

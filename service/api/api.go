@@ -3,9 +3,7 @@ package api
 import (
 	"errors"
 	"net/http"
-
 	"WASA-homework/service/database"
-
 	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
 )

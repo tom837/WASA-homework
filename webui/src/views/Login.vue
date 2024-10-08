@@ -19,7 +19,9 @@
 				this.$router.push({ name: 'Homepage' });
 			} catch (error) {
 				this.errorMessage = error.message;
-				console.error('Caught an error: '+ error.message);
+				console.log(this.errorMessage)
+				console.error('Caught an error: '+ error.message.toString());
+
 			}
 		}
 	}
@@ -30,7 +32,7 @@
 	<div>
     <h2>Login Page</h2>
     <submitLogin @login="handleLogin" />
-    <p v-if="errorMessage" class="text-danger">{{ errorMessage}}</p>
+    <p v-if="errorMessage" class="text-danger">{{errorMessage}}</p>
 	</div>
 </template>
 

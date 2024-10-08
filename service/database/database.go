@@ -11,25 +11,25 @@ type AppDatabase interface {
 	GetName(id string) (string, error)
 	SetName(name string) (string, error)
 	DoLogin(name string) (string, error)
-	Getusers()(*sql.Rows, error)
-	UpdateName(name string, id string) (error)
+	Getusers() (*sql.Rows, error)
+	UpdateName(name string, id string) error
 	Ping() error
-	Follow(user string, foll string, table string)(error)
-	GetFollowers(table string)(*sql.Rows, error)
-	Unfollow(user string, fol string, table string)(error)
-	Upload(user string, photo []byte) (error)
-	GetPhotos()(*sql.Rows, error)
-	Remove_photo(id string, user_id string)(error)
-	LikePhoto(user string, photo string) (error)
-	GetLikes()(*sql.Rows, error)
-	Unlike(user string, photo string)(error)
+	Follow(user string, foll string, table string) error
+	GetFollowers(table string) (*sql.Rows, error)
+	Unfollow(user string, fol string, table string) error
+	Upload(user string, photo []byte) error
+	GetPhotos() (*sql.Rows, error)
+	Remove_photo(id string, user_id string) error
+	LikePhoto(user string, photo string) error
+	GetLikes() (*sql.Rows, error)
+	Unlike(user string, photo string) error
 	AddComment(user string, photo string, comment string) (string, error)
-	GetComments(photoid string)(*sql.Rows, error)
-	Remove_comment(id string, user_id string)(error)
-	GetProfile(user string)(*sql.Rows, string, error)
-	GetStream(user string)(*sql.Rows, error)
-	Following(id string)(*sql.Rows, error)
-	GetBanned(id string)(*sql.Rows, error)
+	GetComments(photoid string) (*sql.Rows, error)
+	Remove_comment(id string, user_id string) error
+	GetProfile(user string) (*sql.Rows, string, error)
+	GetStream(user string) (*sql.Rows, error)
+	Following(id string) (*sql.Rows, error)
+	GetBanned(id string) (*sql.Rows, error)
 }
 
 type appdbimpl struct {
@@ -44,12 +44,12 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	tabel_users := "CREATE TABLE IF NOT EXISTS users(id INT NOT NULL PRIMARY KEY,username TEXT NOT NULL);"
-	defaultuser1:="INSERT INTO users (id,username) SELECT 'u100','Fred' WHERE NOT EXISTS (SELECT 1 FROM users WHERE id='u100');"
-	defaultuser2:="INSERT INTO users (id,username) SELECT 'u101','Amy' WHERE NOT EXISTS (SELECT 1 FROM users WHERE id='u101');"
+	defaultuser1 := "INSERT INTO users (id,username) SELECT 'u100','Fred' WHERE NOT EXISTS (SELECT 1 FROM users WHERE id='u100');"
+	defaultuser2 := "INSERT INTO users (id,username) SELECT 'u101','Amy' WHERE NOT EXISTS (SELECT 1 FROM users WHERE id='u101');"
 	Follower_table := "CREATE TABLE IF NOT EXISTS followers(follower_id INT NOT NULL, followed_id INT NOT NULL, PRIMARY KEY (follower_id, followed_id), FOREIGN KEY (follower_id) REFERENCES users(id), FOREIGN KEY (followed_id) REFERENCES users(id));"
-	Banned_table :="CREATE TABLE IF NOT EXISTS baned(follower_id INT NOT NULL, followed_id INT NOT NULL, PRIMARY KEY (follower_id, followed_id), FOREIGN KEY (follower_id) REFERENCES users(id), FOREIGN KEY (followed_id) REFERENCES users(id));"
+	Banned_table := "CREATE TABLE IF NOT EXISTS baned(follower_id INT NOT NULL, followed_id INT NOT NULL, PRIMARY KEY (follower_id, followed_id), FOREIGN KEY (follower_id) REFERENCES users(id), FOREIGN KEY (followed_id) REFERENCES users(id));"
 	Photo_table := "CREATE tABLE IF NOT EXISTS photos(id INT NOT NULL PRIMARY KEY,user_id INT NOT NULL, photo BYTEA NOT NULL, uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id));"
-	Like_table :="CREATE TABLE IF NOT EXISTS likes(user_id INT NOT NULL, photo_id INT NOT NULL, PRIMARY KEY (user_id, photo_id), FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (photo_id) REFERENCES photos(id));"
+	Like_table := "CREATE TABLE IF NOT EXISTS likes(user_id INT NOT NULL, photo_id INT NOT NULL, PRIMARY KEY (user_id, photo_id), FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (photo_id) REFERENCES photos(id));"
 	Comment_table := "CREATE tABLE IF NOT EXISTS comments(id INT NOT NULL PRIMARY KEY,user_id INT NOT NULL,photo_id INT NOT NULL, comment TEXT NOT NULL , FOREIGN KEY (user_id) REFERENCES users(id),FOREIGN KEY (photo_id) REFERENCES photos(id));"
 	_, err := db.Exec(tabel_users)
 	if err != nil {

@@ -15,6 +15,6 @@ export async function changeusername(username){
         await saveuserid(id,username.name);
         return response.data
     }catch (e){
-        throw new Error(e.toString())
+        throw new Error(e.response.data)
     }
 };

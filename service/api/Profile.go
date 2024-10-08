@@ -1,28 +1,25 @@
 package api
 
 import (
-	"net/http"
-	"github.com/julienschmidt/httprouter"
-	"encoding/json"
-	"time"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"github.com/julienschmidt/httprouter"
+	"net/http"
 	"sort"
-	"log"
+	"time"
 )
 
-
-
-func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, user string)([]byte){
+func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, user string) []byte {
 	var name string
-	rows,name,err := rt.db.GetProfile(user) //sql rows with all the users registered
+	rows, name, err := rt.db.GetProfile(user) // sql rows with all the users registered
 	var comment sql.NullString
 	var id string
 	var photo []byte
 	var like sql.NullString
 	var time time.Time
 	var data Post
-	lst := []Post{}  //list we will return with all the users
+	lst := []Post{} // list we will return with all the users
 	if err != nil {
 		var nothing []byte
 		// Handle error
@@ -30,22 +27,22 @@ func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httpro
 		return nothing
 	}
 	defer rows.Close()
-	for rows.Next() { //loop through all the users
-		err = rows.Scan(&photo,&id,&like,&comment,&time)
+	for rows.Next() { // loop through all the users
+		err = rows.Scan(&photo, &id, &like, &comment, &time)
 		if err != nil {
 			var nothing []byte
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return nothing
 		}
-		data = Post{  //create a json for the user
-			User: 		name,
-			Id: 		id,
-			Photo: 		photo,
-			Likes:		like.String,
-			Comments: 	comment.String,
-			Time: 		time,
+		data = Post{ // create a json for the user
+			User:     name,
+			Id:       id,
+			Photo:    photo,
+			Likes:    like.String,
+			Comments: comment.String,
+			Time:     time,
 		}
-		lst = append(lst, data) //add the json to the final list
+		lst = append(lst, data) // add the json to the final list
 	}
 	// Map to hold aggregated data keyed by user and photo
 	aggregated := make(map[string]*AggregatedData)
@@ -80,71 +77,68 @@ func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httpro
 		result = append(result, *data)
 	}
 
-   	// Convert the result to JSON
-   	jsonData, err := json.Marshal(result)
-   	if err != nil {
+	// Convert the result to JSON
+	jsonData, err := json.Marshal(result)
+	if err != nil {
 		var nothing []byte
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return nothing
-   	}
+	}
 	return jsonData
 }
 
 // Helper function to check if a slice contains a value
 func contains(slice []string, value string) bool {
-   for _, v := range slice {
-	   if v == value {
-		   return true
-	   }
-   }
-   return false
+	for _, v := range slice {
+		if v == value {
+			return true
+		}
+	}
+	return false
 }
 
-func (rt *_router) Profile(w http.ResponseWriter, r *http.Request, ps httprouter.Params)(){
-	user:=ps.ByName("id")
-	profile := rt.UserProfile(w,r,ps,user)
-	if string(profile) == "null"{
-		fmt.Fprintf(w,"No posts yet")
-	}else{
-		fmt.Fprintf(w,string(profile))
+func (rt *_router) Profile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	user := ps.ByName("id")
+	profile := rt.UserProfile(w, r, ps, user)
+	if string(profile) == "null" {
+		fmt.Fprintf(w, "No posts yet")
+	} else {
+		fmt.Fprintf(w, string(profile))
 	}
 }
 
-
-
-
-func (rt *_router) Stream(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
-	user:=rt.UserHandler(w,r,ps)
-	rows,err := rt.db.GetStream(user)
-	if err!=nil{
+func (rt *_router) Stream(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	user := rt.UserHandler(w, r, ps)
+	rows, err := rt.db.GetStream(user)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
-	lst:=[]string{}
+	lst := []string{}
 	var id string
-	for rows.Next() { //loop through all the users
+	for rows.Next() { // loop through all the users
 		err = rows.Scan(&id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		lst = append(lst, id) //add the json to the final list
+		lst = append(lst, id) // add the json to the final list
 	}
 	var other []byte
 	for _, value := range lst {
-		tmp:=rt.UserProfile(w,r,ps,value)
-		if string(tmp)!="null"{
+		tmp := rt.UserProfile(w, r, ps, value)
+		if string(tmp) != "null" {
 			var array1 []map[string]interface{}
 			var array2 []map[string]interface{}
 
 			// Unmarshal both JSON arrays into Go slices
-			if len(other)>0 {
+			if len(other) > 0 {
 				if err := json.Unmarshal(other, &array1); err != nil {
-					log.Fatal(err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
 				}
 			}
 			if err := json.Unmarshal(tmp, &array2); err != nil {
-				log.Fatal(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 
 			// Combine the slices
@@ -153,15 +147,15 @@ func (rt *_router) Stream(w http.ResponseWriter, r *http.Request, ps httprouter.
 			// Marshal the combined slice back into JSON
 			other, err = json.Marshal(combinedjsons)
 			if err != nil {
-				log.Fatal(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}
-    }
-	if other !=nil{
+	}
+	if other != nil {
 		var photos []AggregatedData
 		err = json.Unmarshal(other, &photos)
 		if err != nil {
-			log.Fatal(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
 		// Sort the photos slice by the Time field
@@ -172,13 +166,10 @@ func (rt *_router) Stream(w http.ResponseWriter, r *http.Request, ps httprouter.
 		// Marshal the sorted slice back into JSON
 		sortedJSON, err := json.MarshalIndent(photos, "", "    ")
 		if err != nil {
-			log.Fatal(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
-
-		fmt.Fprintf(w,string(sortedJSON))
+		fmt.Fprintf(w, string(sortedJSON))
 	}
-
-
 
 }

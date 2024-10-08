@@ -10,7 +10,7 @@ export async function login(username){
             console.log('Response:', response.data);
             await saveuserid(response.data.ID, response.data.name)
         }catch (e){
-            throw new Error(e.toString())
+            throw new Error(e.response.data)
         }
     };
 

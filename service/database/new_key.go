@@ -2,40 +2,40 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
 )
 
 func MaxIntSlice(slice []int) int {
-    if len(slice) == 0 {
-        return 0 // or some default value depending on your case
-    }
-    max := slice[0]
-    for _, value := range slice {
-        if value > max {
-            max = value
-        }
-    }
-    return max
+	if len(slice) == 0 {
+		return 0 // default
+	}
+	max := slice[0]
+	for _, value := range slice {
+		if value > max {
+			max = value
+		}
+	}
+	return max
 }
-
 
 func generateNewKey(db *appdbimpl, prefix string, database string) (string, error) {
 	// Query to find the highest key
-	query:= fmt.Sprintf("SELECT id FROM %s", database)
-	rows, err:= db.c.Query(query)
+	query := fmt.Sprintf("SELECT id FROM %s", database)
+	rows, err := db.c.Query(query)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			// No entries exist yet, start from u1
 			return fmt.Sprintf("%s1", prefix), nil
 		}
 		// Handle other errors
 		return "", err
 	}
-	lst:= []int{}
+	lst := []int{}
 	var id string
-	for rows.Next() { //loop through all the users
+	for rows.Next() { // loop through all the users
 		err = rows.Scan(&id)
 		if err != nil {
 			return "", err
@@ -52,14 +52,14 @@ func generateNewKey(db *appdbimpl, prefix string, database string) (string, erro
 		if err != nil {
 			return "", err
 		}
-		lst = append(lst, num) //add the json to the final list
+		lst = append(lst, num) // add the json to the final list
 	}
 	// Generate the new key
 	var max int
-	if len(lst)>0{
-		max =MaxIntSlice(lst)
+	if len(lst) > 0 {
+		max = MaxIntSlice(lst)
 
-	}else{
+	} else {
 		max = 0
 	}
 	newKey := fmt.Sprintf("%s%d", prefix, max+1)

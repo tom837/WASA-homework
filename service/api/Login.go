@@ -2,19 +2,16 @@ package api
 
 import (
 	"encoding/json"
-	"net/http"
-	"github.com/julienschmidt/httprouter"
 	"fmt"
+	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
 
-//var store = sessions.NewCookieStore([]byte("super-secret-key"))
-
-func (rt *_router) AssertNameCorrect(name string) (bool) {
-	if len(name)<3 || len(name)>16{
+func (rt *_router) AssertNameCorrect(name string) bool {
+	if len(name) < 3 || len(name) > 16 {
 		return true
 	}
 	return false
-
 }
 
 func (rt *_router) Login(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -25,8 +22,8 @@ func (rt *_router) Login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		return
 	}
 	defer r.Body.Close()
-	if rt.AssertNameCorrect(user.UserName){
-		err=fmt.Errorf("Username has to be between 3 and 16 characters long")
+	if rt.AssertNameCorrect(user.UserName) {
+		err = fmt.Errorf("Username has to be between 3 and 16 characters long")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -34,13 +31,8 @@ func (rt *_router) Login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	//Store id into session
-	/*
-	use:=rt.UserHandler(w,r,ps)
-	fmt.Println(use)
-	*/
-	//fmt.Fprintf(w,"You logend in successfully!")
-	//Make usename and id into User structure
+	// Store id into session
+	// Make usename and id into User structure
 	data := User{
 		UserName: user.UserName,
 		ID:       id,
