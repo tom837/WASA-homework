@@ -91,7 +91,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
 
-  /user/{userid}:
+  /users:
+    get:
+      summary: get a list of all users
+      description: |
+        get a list of all users that have created an account on the website.
+      tags: [profile]
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+  /user/:id:
     parameters:
       - $ref: '#/components/parameters/users'
     get:
@@ -115,7 +130,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
 
-  /user/{userid}/followers/:
+  /followers:
+    parameters:
+      - $ref: '#/components/parameters/users'
+    get:
+      summary: get followers
+      description: |
+        get a list of all the users you are following.
+      tags: [userInteraction]
+      operationId: getFollowers
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '404':
+          description: user not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
+
+  /user/:id/followers/:
     parameters:
       - $ref: '#/components/parameters/users'
     post:
@@ -157,7 +195,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
 
-  /user/{userid}/ban/:
+  /ban:
+    parameters:
+      - $ref: '#/components/parameters/users'
+    get:
+      summary: get banned users
+      description: |
+        get a list of all the users you have banned.
+      tags: [userInteraction]
+      operationId: getBanned
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '404':
+          description: user not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
+
+  /user/:id/ban/:
     parameters:
       - $ref: '#/components/parameters/users'
     post:
@@ -201,6 +262,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
   /photos:
+    parameters:
+      - $ref: '#/components/parameters/users'
+    get:
+      summary: get all photos
+      description: |
+        get a list of all photos uploaded on the website.
+      tags: [userInteraction]
+      operationId: getPhotos
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/photo'
+        '404':
+          description: user not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
+
     post:
       summary: post a new photo
       description: |
@@ -222,7 +305,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/photo'
 
-  /photos/{photoId}:
+  /photos/:id:
     parameters:
         - $ref: '#/components/parameters/photo'
     delete:
@@ -246,7 +329,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
 
-  /photos/{photoId}/likes/:
+  /photos/:id/likes/:
     parameters:
       - $ref: '#/components/parameters/photo'
 
@@ -293,7 +376,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
 
-  /photos/{photoId}/comments/:
+  /photos/comments/:id:
+    parameters:
+      - $ref: '#/components/parameters/photo'
+    get:
+      summary: get the comments
+      description: |
+        get a list of all comments uploaded on a photo.
+      tags: [userInteraction]
+      operationId: getComments
+      responses:
+        '200':
+          description: succesfull response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comments'
+        '404':
+          description: photo not found
+          content:
+            appliccation/json:
+              schema:
+                $ref: '#/components/schemas/error'
+
+  /photos/:id/comments/:
     parameters:
       - $ref: '#/components/parameters/photo'
     post:

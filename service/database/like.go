@@ -34,7 +34,7 @@ func (db *appdbimpl) LikePhoto(user string, photo string) error {
 
 func (db *appdbimpl) GetLikes() (*sql.Rows, error) {
 	query := "SELECT *  FROM likes;"
-	row, err := db.c.Query(query) // get all photos in the database
+	row, err := db.c.Query(query) // get all likes in the database
 	return row, err
 
 }
