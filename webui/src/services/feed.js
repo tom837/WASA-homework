@@ -18,9 +18,10 @@ export async function feed(){
 };
 
 
-export async function profile(id){
+export async function profile(userid){
+	let id = await getuserid();
     try{
-        let response = await api.get(`/user/${id}`,{
+        let response = await api.get(`/user/${userid}`,{
             headers:{
                 "Authorization": id
             }

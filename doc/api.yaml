@@ -31,7 +31,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user/properties/username'
+              type: object
+              properties:
+                $ref: '#/components/schemas/user/properties/name'
         required: true
       responses:
         '201':
@@ -72,10 +74,9 @@ paths:
         content:
           application/json:
             schema:
-              type: string
-              pattern: 'ˆ.*?$'
-              minLength: 3
-              maxLength: 16
+              type: object
+              properties:
+                $ref: '#/components/schemas/user/properties/name'
         required: true
       responses:
         '200':
@@ -264,26 +265,6 @@ paths:
   /photos:
     parameters:
       - $ref: '#/components/parameters/users'
-    get:
-      summary: get all photos
-      description: |
-        get a list of all photos uploaded on the website.
-      tags: [userInteraction]
-      operationId: getPhotos
-      responses:
-        '200':
-          description: succesfull response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/photo'
-        '404':
-          description: user not found
-          content:
-            appliccation/json:
-              schema:
-                $ref: '#/components/schemas/error'
-
     post:
       summary: post a new photo
       description: |
@@ -295,7 +276,9 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/photo'
+              type: object
+              properties:
+                $ref: '#/components/schemas/photo/properties/photo'
         required: true
       responses:
         '201':
@@ -413,7 +396,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/comments'
+              type: object
+              properties:
+                $ref: '#/components/schemas/comments/properties/Comment'
       responses:
         '201':
           description: comment posted successfully
@@ -447,13 +432,12 @@ paths:
             appliccation/json:
               schema:
                 $ref: '#/components/schemas/error'
-
 components:
   schemas:
     user:
       type: object
       properties:
-        username:
+        name:
           type: string
           pattern: '^.*?$'
           minLength: 3
@@ -468,7 +452,7 @@ components:
     photo:
       type: object
       properties:
-        file:
+        photo:
           type: string
           format: binary
           description: this is the photo itself
@@ -484,7 +468,7 @@ components:
     comments:
       type: object
       properties:
-        body:
+        Comment:
           type: string
           description: what the comment will say
         id:
