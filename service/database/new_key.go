@@ -35,7 +35,7 @@ func generateNewKey(db *appdbimpl, prefix string, database string) (string, erro
 	}
 	if rows.Err() != nil {
 		rows.Close()
-		return "",rows.Err()
+		return "", rows.Err()
 	}
 	lst := []int{}
 	var id string

@@ -23,7 +23,7 @@ func (rt *_router) Comment(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 	data := Comment{
-		ID:      id,
+		Id:      id,
 		Userid:  user,
 		Comment: comment.Comment}
 	w.Header().Set("Content-Type", "encoding/json")
@@ -63,7 +63,7 @@ func (rt *_router) Comment_lst(w http.ResponseWriter, r *http.Request, ps httpro
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		data = Comment{ // create a json for the user
-			ID:      id,
+			Id:      id,
 			Userid:  user,
 			User:    username,
 			Comment: comment,
