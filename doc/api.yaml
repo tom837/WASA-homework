@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
   title: API Title
-  version: '1.0'
+  version: 1.0.0
 
 servers:
   - url: http://localhost:3000
@@ -31,9 +31,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                $ref: '#/components/schemas/user/properties/name'
+              $ref: '#/components/schemas/user'
         required: true
       responses:
         '201':
@@ -74,9 +72,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                $ref: '#/components/schemas/user/properties/name'
+              $ref: '#/components/schemas/user'
         required: true
       responses:
         '200':
@@ -107,7 +103,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/user'
 
-  /user/:id:
+  /user/:{id}:
     parameters:
       - $ref: '#/components/parameters/users'
     get:
@@ -276,9 +272,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              type: object
-              properties:
-                $ref: '#/components/schemas/photo/properties/photo'
+              $ref: '#/components/schemas/photo'
         required: true
       responses:
         '201':
@@ -288,7 +282,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/photo'
 
-  /photos/:id:
+  /photos/:{id}:
     parameters:
         - $ref: '#/components/parameters/photo'
     delete:
@@ -396,9 +390,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                $ref: '#/components/schemas/comments/properties/Comment'
+              $ref: '#/components/schemas/comments'
       responses:
         '201':
           description: comment posted successfully
@@ -463,7 +455,6 @@ components:
           description: this is the unique identifier for photos
         user:
           $ref: '#/components/schemas/user/properties/id'
-          description: every photo is associated to the user that posted it
 
     comments:
       type: object
@@ -494,7 +485,7 @@ components:
 
   parameters:
     users:
-      name: userid
+      name: id
       in: path
       required: true
       schema:
@@ -503,7 +494,7 @@ components:
           id:
             $ref: '#/components/schemas/user/properties/id'
     photo:
-      name: photoId
+      name: id
       in: path
       required: true
       schema:
@@ -524,6 +515,9 @@ components:
 
 
 
+
+
+
   securitySchemes:
     bearerAuth:
       type: http
@@ -532,7 +526,3 @@ components:
 
 security:
   - bearerAuth: []
-
-
-
-
