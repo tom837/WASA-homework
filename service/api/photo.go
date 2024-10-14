@@ -24,7 +24,6 @@ func (rt *_router) UploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 	fmt.Fprintf(w, "Photo uploaded successfuly!")
-
 }
 
 func (rt *_router) Photo_lst(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -51,7 +50,7 @@ func (rt *_router) Photo_lst(w http.ResponseWriter, r *http.Request, ps httprout
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		data = Photo{ // create a json for the user
-			ID:   id,
+			Id:   id,
 			User: user,
 			Time: time,
 		}

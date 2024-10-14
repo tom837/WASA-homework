@@ -42,7 +42,7 @@ func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httpro
 		}
 		data = Post{ // create a json for the user
 			User:     name,
-			ID:       id,
+			Id:       id,
 			Photo:    photo,
 			Likes:    like.String,
 			Comments: comment.String,
@@ -54,11 +54,11 @@ func (rt *_router) UserProfile(w http.ResponseWriter, r *http.Request, ps httpro
 	aggregated := make(map[string]*AggregatedData)
 
 	for _, entry := range lst {
-		key := entry.User + "-" + entry.ID
+		key := entry.User + "-" + entry.Id
 		if _, exists := aggregated[key]; !exists {
 			aggregated[key] = &AggregatedData{
 				User:     entry.User,
-				ID:       entry.ID,
+				Id:       entry.Id,
 				Photo:    entry.Photo,
 				Likes:    []string{},
 				Comments: []string{},

@@ -15,7 +15,7 @@ type Follow struct {
 }
 
 type Photo struct {
-	ID   string    "json:\"id\""
+	Id   string    "json:\"id\""
 	User string    "json\"userid\""
 	Time time.Time "json\"time\""
 }
@@ -26,7 +26,7 @@ type Like struct {
 }
 
 type Comment struct {
-	ID      string "json\"id\""
+	Id      string "json\"id\""
 	Userid  string "json\"userid\""
 	User    string "json\"userid\""
 	Comment string "json\"comment\""
@@ -34,7 +34,7 @@ type Comment struct {
 
 type Post struct {
 	User     string    "json\"photo\""
-	ID       string    "json\"id\""
+	Id       string    "json\"id\""
 	Photo    []byte    "json\"photo\""
 	Likes    string    "json\"likes\""
 	Comments string    "json\"likes\""
@@ -43,7 +43,7 @@ type Post struct {
 
 type AggregatedData struct {
 	User     string    `json:"User"`
-	ID       string    "json\"id\""
+	Id       string    "json\"id\""
 	Photo    []byte    `json:"Photo"`
 	Likes    []string  `json:"Likes"`
 	Comments []string  `json:"Comments"`
