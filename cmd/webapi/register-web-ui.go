@@ -1,11 +1,12 @@
-// go:build webui
+//go:build webui
 
-package INDENT
+package main
 
 import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"WASA-homework/webui"
 	"strings"
 )
 
@@ -22,3 +23,4 @@ func registerWebUI(hdl http.Handler) (http.Handler, error) {
 		hdl.ServeHTTP(w, r)
 	}), nil
 }
+
