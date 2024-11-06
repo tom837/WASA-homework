@@ -40,7 +40,7 @@ func (db *appdbimpl) GetLikes() (*sql.Rows, error) {
 }
 
 func (db *appdbimpl) Unlike(user string, photo string) error {
-	query := "SELECT user_id FROM photos WHERE id=?"
+	query := "SELECT 1 FROM photos WHERE id=?"
 	err := db.c.QueryRow(query, photo).Scan(new(int))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

@@ -30,7 +30,7 @@
 	<div>
     <h2>Change Name</h2>
     <Changename @change="changeuser_name" />
-    <p v-if="errorMessage" class="text-danger">{{ errorMessage}}</p>
+    <p v-if="errorMessage" class="text-danger">{{errorMessage}}</p>
 	</div>
 </template>
 

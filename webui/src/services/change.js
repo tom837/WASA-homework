@@ -5,7 +5,6 @@ import api from './axios';
 
 export async function changeusername(username){
     let id = await getuserid();
-    console.log(username)
     try{
         let response = await api.put(`/user`, {
             name:username.name,
