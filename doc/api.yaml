@@ -31,10 +31,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user'
+              $ref: '#/components/schemas/name'
         required: true
       responses:
-        '201':
+        '200':
           description: User log-in action successful
           content:
             application/json:
@@ -72,7 +72,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user'
+              $ref: '#/components/schemas/name'
         required: true
       responses:
         '200':
@@ -159,8 +159,14 @@ paths:
         You will follow this user and there posts will show up on your stream.
       tags: [userInteraction]
       operationId: followUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              nullable: true
       responses:
-        '201':
+        '200':
           description: 'user successfully followed'
           content:
             application/json:
@@ -225,8 +231,14 @@ paths:
         He will also no longer be able to see your photos.
       tags: [userInteraction]
       operationId: banUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              nullable: true
       responses:
-        '201':
+        '200':
           description: user baned successfully
           content:
             application/json:
@@ -270,12 +282,12 @@ paths:
       operationId: uploadPhoto
       requestBody:
         content:
-          multipart/form-data:
+          ppliccation/json:
             schema:
-              $ref: '#/components/schemas/photo'
+              $ref: '#/components/schemas/photos'
         required: true
       responses:
-        '201':
+        '200':
           description: photo posted successfully
           content:
             application/json:
@@ -309,7 +321,6 @@ paths:
   /photos/:id/likes:
     parameters:
       - $ref: '#/components/parameters/photo'
-
     post:
       summary: like a photo
       description: |
@@ -318,8 +329,14 @@ paths:
         likes can always be removed.
       tags: [react]
       operationId:  likePhoto
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              nullable: true
       responses:
-        '201':
+        '200':
           description: photo liked successfully
           content:
             application/json:
@@ -386,13 +403,13 @@ paths:
       tags: [react]
       operationId: commentPhoto
       requestBody:
-        description: you have to provide the content of the comment
+        description: the content of the comment
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/comments'
+              $ref: '#/components/schemas/Comment'
       responses:
-        '201':
+        '200':
           description: comment posted successfully
           content:
             application/json:
@@ -426,28 +443,31 @@ paths:
                 $ref: '#/components/schemas/error'
 components:
   schemas:
+    name:
+      type: string
+      pattern: '^.*?$'
+      minLength: 3
+      maxLength: 16
+      description: this is the public username everyone will be able to see
     user:
       type: object
       properties:
         name:
-          type: string
-          pattern: '^.*?$'
-          minLength: 3
-          maxLength: 16
-          description: this is the public username everyone will be able to see
+          $ref: '#/components/schemas/name'
         id:
           type: integer
           pattern: '^u[0-9]+$'
           example: "u101"
           description: this is the unique identifier for users
-
-    photo:
-      type: object
-      properties:
-        photo:
+    photos:
           type: string
           format: binary
           description: this is the photo itself
+    photo:
+      type: object
+      properties:
+        photos:
+          $ref: '#/components/schemas/photos'
         id:
           type: string
           pattern: '^p[0-9]+$'
@@ -455,13 +475,14 @@ components:
           description: this is the unique identifier for photos
         user:
           $ref: '#/components/schemas/user/properties/id'
-
+    Comment:
+      type: string
+      description: what the comment will say
     comments:
       type: object
       properties:
         Comment:
-          type: string
-          description: what the comment will say
+          $ref: '#/components/schemas/Comment'
         id:
           type: string
           pattern: '^c[0-9]+$'
