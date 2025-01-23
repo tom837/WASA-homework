@@ -50,7 +50,7 @@
           return likes.length;
         },
         Liked(likes){
-          if (likes.includes(this.userid)){
+          if (likes.includes(this.me)){
             return true
           }else{
             return false

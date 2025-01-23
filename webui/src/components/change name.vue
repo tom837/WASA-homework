@@ -3,7 +3,7 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <h2 class="text-center">Change name</h2>
-                <form @submit.prevent="Changename">
+                <form @submit.prevent="Changenames">
                     <div class="form-group">
                         <label for="username">Username</label>
                         <input
@@ -27,16 +27,16 @@
     export default{
         data(){
             return {
-                name: '',
-                errorMessage: ''
+                UserName: '',
+                errorMessage: '',
+				name:''
             };
         },
         methods: {
-            Changename() {
-                this.$emit('change', { name: this.name});
+            Changenames() {
+                this.$emit('changes', { name: this.name});
                 this.errorMessage = '';
             }
         }
     };
 </script>
-

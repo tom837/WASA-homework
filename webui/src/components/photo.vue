@@ -120,6 +120,8 @@
     height: 100vh;
 }
 
+
+
 .photo{
     padding: 10px;
     text-align: center;

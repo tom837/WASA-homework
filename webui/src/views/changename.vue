@@ -1,11 +1,11 @@
 <script>
-	import Changename from '@/components/change name.vue';
+	import Changenames from '@/components/change name.vue';
 	import { changeusername } from '@/services/change.js';
 	export default {
-	components: { Changename },
+	components: { Changenames },
 	data() {
 		return {
-		errorMessage: ''
+		errorMessage: '',
 		};
 	},
 	methods: {
@@ -19,7 +19,9 @@
 				this.$router.push({ name: 'profile' });
 			} catch (error) {
 				this.errorMessage = error.message;
-				console.error('Caught an error: '+ error.message);
+				console.log(this.errorMessage)
+				console.error('Caught an error: '+ error.message.toString());
+
 			}
 		}
 	}
@@ -28,11 +30,12 @@
 
 <template>
 	<div>
-    <h2>Change Name</h2>
-    <Changename @change="changeuser_name" />
+	<h2>Change Name</h2>
+    <Changenames @changes="changeuser_name" />
     <p v-if="errorMessage" class="text-danger">{{errorMessage}}</p>
 	</div>
 </template>
 
 <style>
 </style>
+
